@@ -198,7 +198,6 @@ INSERT INTO board (id, name, url) VALUES(302,'전자정보대학 학생회','');
 INSERT INTO board (id, name, url) VALUES(30201,'공지사항','');
 INSERT INTO board (id, name, url) VALUES(303,'소프트웨어학과 학생회','');
 INSERT INTO board (id, name, url) VALUES(30301,'공지사항','');
-INSERT INTO board (id, name, url) VALUES(4,'충림이','');
 INSERT INTO board (id, name, url) VALUES(5,'동아리','');
 
 INSERT INTO board_tree (board_id, parent_board_id) VALUES(1, null);
@@ -401,5 +400,4 @@ INSERT INTO board_tree (board_id, parent_board_id) VALUES(302, 3);
 INSERT INTO board_tree (board_id, parent_board_id) VALUES(30201, 302);
 INSERT INTO board_tree (board_id, parent_board_id) VALUES(303, 3);
 INSERT INTO board_tree (board_id, parent_board_id) VALUES(30301, 303);
-INSERT INTO board_tree (board_id, parent_board_id) VALUES(4, null);
 INSERT INTO board_tree (board_id, parent_board_id) VALUES(5, null);

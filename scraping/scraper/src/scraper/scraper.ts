@@ -27,7 +27,7 @@ export const scraping = async ({ scenario }: scrapingProps) => {
 
     const namespace = "script";
 
-    if (IS_DEV) console.info("[INFO] 스크래핑 - ", scenario);
+    //if (IS_DEV) console.info("[INFO] 스크래핑 - ", scenario);
 
     await scraper.goto(url, { referer: url });
     await scraper.waitForSelector(waitSelector);
