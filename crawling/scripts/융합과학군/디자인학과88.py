@@ -1,0 +1,1 @@
+https://www.design.chungbuk.ac.kr/blog
