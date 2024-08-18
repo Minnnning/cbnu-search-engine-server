@@ -1,8 +1,8 @@
-from 식물자원학과 import NoticeScraper
+from 식물자원학과 import PlantResourcesNoticeScraper
 from selenium.webdriver.common.by import By
 import time
 
-class FoodLifeEngineeringNoticeScraper(NoticeScraper):
+class FoodLifeEngineeringNoticeScraper(PlantResourcesNoticeScraper):
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
         super().__init__(url, site, category, notice_list_selector, notice_contents_selector)
 
@@ -30,22 +30,11 @@ class FoodLifeEngineeringNoticeScraper(NoticeScraper):
             notices.append(notice)
         
         return notices
-
-if __name__ == "__main__":
+    
+class 식품생명공학과:
     # 식품생명공학과 공지사항 설정
     url = "https://food.chungbuk.ac.kr/?pg_idx=239"
     site = "식품생명공학과"
     category = "식공소식"
     notice_list_selector = "#data_list > tbody > tr"
     notice_contents_selector = "#bbs_contnets > div.rd_body.clear"
-
-    scraper = FoodLifeEngineeringNoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")

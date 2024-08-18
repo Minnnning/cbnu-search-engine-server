@@ -1,4 +1,4 @@
-from 교육학과 import NoticeScraper
+from notice_scraper import NoticeScraper
 from selenium.webdriver.common.by import By
 import time
 
@@ -29,21 +29,10 @@ class SocialEducationNoticeScraper(NoticeScraper):
         
         return notices
 
-if __name__ == "__main__":
+class 사회교육과:
     # 사회교육과 공지사항 설정
     url = "http://edu.chungbuk.ac.kr/soc/selectBbsNttList.do?key=297&bbsNo=40"
     site = "사회교육과"
     category = "공지사항"
     notice_list_selector = "#board > div.tableA > table > tbody > tr"
     notice_contents_selector = "#board > div > div.tit_area > ul > li:nth-child(4)"
-
-    scraper = SocialEducationNoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")

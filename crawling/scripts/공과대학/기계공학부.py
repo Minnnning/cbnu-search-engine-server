@@ -1,6 +1,6 @@
 # 기계공학부.py
 
-from 건축공학과 import NoticeScraper
+from notice_scraper import NoticeScraper
 from selenium.webdriver.common.by import By
 import time, datetime
 
@@ -35,21 +35,10 @@ class MechanicalEngineeringNoticeScraper(NoticeScraper):
         
         return notices
 
-if __name__ == "__main__":
+class 기계공학부:
     # 기계공학부 공지사항 설정
     url = "https://me.chungbuk.ac.kr/me5_1"
     site = "기계공학부"
     category = "공지사항"
     notice_list_selector = "#bd_172_0 > div.bd_lst_wrp > table > tbody > tr"
     notice_contents_selector = "div.rd_body > article"
-
-    scraper = MechanicalEngineeringNoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")
