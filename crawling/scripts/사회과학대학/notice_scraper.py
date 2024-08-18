@@ -1,13 +1,11 @@
-#농업경제학과.py
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
-import time
-import json
-import re
+import time, json, datetime
 
+# Config 파일에서 드라이버 경로 읽기
 with open('../../config.json', 'r') as config_file:
     config = json.load(config_file)
     driver_path = config['driver_path']
@@ -36,35 +34,27 @@ class NoticeScraper:
 
         list_items = self.driver.find_elements(By.CSS_SELECTOR, self.notice_list_selector)
         notices = []
+        current_year = datetime.datetime.now().year
         for item in list_items:
             td = item.find_elements(By.TAG_NAME, "td")
-            if not td or len(td) < 3:
+            if not td or len(td) < 4:
                 continue
 
-            url_tag = td[1].find_element(By.TAG_NAME, "a")
-            url = url_tag.get_attribute("href").strip()
+            title_element = item.find_element(By.CSS_SELECTOR, "a[href*='post']")
+            raw_date = td[3].text.strip()
 
-            if url_tag.get_attribute("onclick"):
-                onclick_content = url_tag.get_attribute("onclick")
-                id_match = re.search(r'(\d+)', onclick_content)
-                if id_match:
-                    id_value = id_match.group(1)
-                    url = f"{self.url}&mod=view&pidx={id_value}&page=1"
-            
-            if self.site == "농업경제학과":
-                raw_date = td[2].text.strip()
-                # 날짜 형식을 2024.2.1에서 2024-2-1로 변환
-                date_parts = raw_date.split('.')
-                formatted_date = f"{date_parts[0]}-{date_parts[1]}-{date_parts[2]}"
+            # 날짜 형식 처리
+            if ":" in raw_date:
+                date = datetime.datetime.now().strftime("%Y-%m-%d")
             else:
-                formatted_date = td[3].text.strip()
+                date = f"{current_year}-{raw_date}"
 
             notice = {
                 "site": self.site,
                 "category": self.category,
-                "title": td[1].find_element(By.TAG_NAME, "a").text.strip(),
-                "url": url,
-                "date": formatted_date
+                "title": title_element.text.strip(),
+                "url": title_element.get_attribute("href").strip(),
+                "date": date
             }
             notices.append(notice)
         
@@ -73,16 +63,6 @@ class NoticeScraper:
     def get_contents_html(self, url):
         self.driver.get(url)
         time.sleep(2)  # 페이지 로딩 대기
-
-        # link_sns 클래스를 가진 요소의 부모 요소 제거
-        self.driver.execute_script("""
-            var elements = document.getElementsByClassName('link_sns');
-            while(elements.length > 0){
-                var parentElement = elements[0].parentNode;
-                parentElement.parentNode.removeChild(parentElement);
-            }
-        """)
-
         contents_element = self.driver.find_element(By.CSS_SELECTOR, self.notice_contents_selector)
         return contents_element.get_attribute('outerHTML')
 
@@ -94,21 +74,3 @@ class NoticeScraper:
     def close(self):
         self.driver.quit()
 
-if __name__ == "__main__":
-    # 농업경제학과 공지사항 설정
-    url = "https://agecon.cbnu.ac.kr/?pg_idx=119"
-    site = "농업경제학과"
-    category = "공지사항"
-    notice_list_selector = "#bbs_contnets tbody > tr"
-    notice_contents_selector = ".dambbs_body"
-
-    scraper = NoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")

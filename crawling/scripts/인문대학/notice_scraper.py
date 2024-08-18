@@ -37,11 +37,11 @@ class NoticeScraper:
         notices = []
         for item in list_items:
             row = item.find_elements(By.TAG_NAME, "td")
-            if not row or len(row) < 3:
+            if not row or len(row) < 5:
                 continue
 
             title_element = row[1].find_element(By.TAG_NAME, "a")
-            raw_date = row[2].text.strip()
+            raw_date = row[4].text.strip()
             formatted_date = raw_date.replace('.', '-')
 
             notice = {
@@ -68,22 +68,3 @@ class NoticeScraper:
 
     def close(self):
         self.driver.quit()
-
-if __name__ == "__main__":
-    # 의학과 공지사항 설정
-    url = "https://medweb.chungbuk.ac.kr/master.php?pg_idx=110"
-    site = "의학과"
-    category = "공지사항"
-    notice_list_selector = ".dambbs_list tbody tr"
-    notice_contents_selector = ".dambbs_body"
-
-    scraper = NoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")

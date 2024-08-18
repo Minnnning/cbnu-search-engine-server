@@ -1,14 +1,12 @@
 # 지능로봇공학과.py
 
-from 전기공학부 import NoticeScraper
+from notice_scraper import NoticeScraper
 from selenium.webdriver.common.by import By
 import time
 import datetime
 
 class IntelligentRoboticsNoticeScraper(NoticeScraper):
-    def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
-        super().__init__(url, site, category, notice_list_selector, notice_contents_selector)
-
+    
     def get_notice_list(self):
         self.driver.get(self.url)
         time.sleep(2)  # 페이지 로딩 대기
@@ -36,22 +34,11 @@ class IntelligentRoboticsNoticeScraper(NoticeScraper):
         
         return notices
 
-if __name__ == "__main__":
+class 지능로봇공학과:
     # 지능로봇공학과 공지사항 설정
     url = "https://airobot.chungbuk.ac.kr/airbot_0702"
     site = "지능로봇공학과"
     category = "공지사항"
     notice_list_selector = ".bd_lst tbody > tr"
     notice_contents_selector = ".rd_body"
-
-    scraper = IntelligentRoboticsNoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")
 

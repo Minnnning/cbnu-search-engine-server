@@ -29,11 +29,6 @@ class NoticeScraper:
         driver = webdriver.Firefox(service=service, options=firefox_options)
         return driver
 
-    def parse_date(self, raw_date):
-        date_parts = raw_date.split('.')
-        formatted_date = f"{date_parts[0]}-{date_parts[1]}-{date_parts[2]}"
-        return formatted_date
-
     def get_notice_list(self):
         self.driver.get(self.url)
         time.sleep(2)  # 페이지 로딩 대기
@@ -41,18 +36,19 @@ class NoticeScraper:
         list_items = self.driver.find_elements(By.CSS_SELECTOR, self.notice_list_selector)
         notices = []
         for item in list_items:
-            td = item.find_elements(By.TAG_NAME, "td")
-            if not td or len(td) < 5:
+            row = item.find_elements(By.TAG_NAME, "td")
+            if not row or len(row) < 3:
                 continue
 
-            raw_date = td[4].text.strip()
-            formatted_date = self.parse_date(raw_date)
+            title_element = row[1].find_element(By.TAG_NAME, "a")
+            raw_date = row[2].text.strip()
+            formatted_date = raw_date.replace('.', '-')
 
             notice = {
                 "site": self.site,
                 "category": self.category,
-                "title": td[1].find_element(By.TAG_NAME, "a").text.strip(),
-                "url": td[1].find_element(By.TAG_NAME, "a").get_attribute("href").strip(),
+                "title": title_element.text.strip(),
+                "url": title_element.get_attribute("href").strip(),
                 "date": formatted_date
             }
             notices.append(notice)
@@ -72,22 +68,3 @@ class NoticeScraper:
 
     def close(self):
         self.driver.quit()
-
-if __name__ == "__main__":
-    # 교육학과 공지사항 설정
-    url = "https://edu.chungbuk.ac.kr/edu/selectBbsNttList.do?key=170&bbsNo=8"
-    site = "교육학과"
-    category = "공지사항"
-    notice_list_selector = "#board > div.tableA > table > tbody > tr"
-    notice_contents_selector = "#board > div > div.tit_area > ul > li:nth-child(3) > div"
-
-    scraper = NoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")

@@ -1,12 +1,8 @@
-# 전자공학부.py
-
-from 전기공학부 import NoticeScraper
+from notice_scraper import NoticeScraper
 from selenium.webdriver.common.by import By
 import time
 
 class ElectronicEngineeringNoticeScraper(NoticeScraper):
-    def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
-        super().__init__(url, site, category, notice_list_selector, notice_contents_selector)
 
     def get_notice_list(self):
         self.driver.get(self.url)
@@ -33,21 +29,10 @@ class ElectronicEngineeringNoticeScraper(NoticeScraper):
         
         return notices
 
-if __name__ == "__main__":
+class 전자공학부:
     # 전자공학부 공지사항 설정
     url = "https://elec.chungbuk.ac.kr/bbs/bbs.php?db=notice"
     site = "전자공학부"
     category = "공지사항"
     notice_list_selector = "#subContent > table:nth-child(7) > tbody > tr"
-    notice_contents_selector = "#articles"  # 필요에 맞게 설정
-
-    scraper = ElectronicEngineeringNoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-    notice_list = scraper.get_notice_list()
-    for notice in notice_list:
-        print(f"Title: {notice['title']}")
-        print(f"URL: {notice['url']}")
-        print(f"Date: {notice['date']}")
-        contents_text = scraper.get_contents_text(notice['url'])
-        print(f"Contents:\n{contents_text}")
-    scraper.close()
-    print("close")
+    notice_contents_selector = "#articles"  
