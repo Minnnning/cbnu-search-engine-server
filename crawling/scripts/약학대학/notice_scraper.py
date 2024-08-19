@@ -6,7 +6,7 @@ import time
 import json
 
 # Config 파일에서 드라이버 경로 읽기
-with open('../../config.json', 'r') as config_file:
+with open('config.json', 'r') as config_file:
     config = json.load(config_file)
     driver_path = config['driver_path']
 

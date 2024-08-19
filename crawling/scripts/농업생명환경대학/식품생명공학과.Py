@@ -35,6 +35,6 @@ class 식품생명공학과:
     # 식품생명공학과 공지사항 설정
     url = "https://food.chungbuk.ac.kr/?pg_idx=239"
     site = "식품생명공학과"
-    category = "식공소식"
+    category = "공지사항"
     notice_list_selector = "#data_list > tbody > tr"
     notice_contents_selector = "#bbs_contnets > div.rd_body.clear"

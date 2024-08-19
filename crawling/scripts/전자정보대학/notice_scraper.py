@@ -5,7 +5,7 @@ from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
 import time,json
 
-with open('../../config.json', 'r') as config_file:
+with open('config.json', 'r') as config_file:
     config = json.load(config_file)
     driver_path = config['driver_path']
 
@@ -56,7 +56,7 @@ class NoticeScraper:
 
     def get_contents_html(self, url):
         self.driver.get(url)
-        time.sleep(2)  # 페이지 로딩 대기
+        time.sleep(5)  # 페이지 로딩 대기
 
         contents_element = self.driver.find_element(By.CSS_SELECTOR, self.notice_contents_selector)
         return contents_element.get_attribute('outerHTML')

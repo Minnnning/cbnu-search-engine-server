@@ -8,7 +8,7 @@ from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import time, json
 
-with open('../../config.json', 'r') as config_file:
+with open('config.json', 'r') as config_file:
     config = json.load(config_file)
     driver_path = config['driver_path']
 
@@ -55,7 +55,7 @@ class NoticeScraper:
     def get_contents_html(self, url):
         self.driver.get(url)
         try:
-            WebDriverWait(self.driver, 30).until(
+            WebDriverWait(self.driver, 40).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, self.notice_contents_selector))
             )
         except TimeoutException:
