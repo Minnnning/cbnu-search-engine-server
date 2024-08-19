@@ -17,6 +17,13 @@ table_N = 'notice_board'
 db_connection = pymysql.connect(host=hosturl, user=username, password=userpassword, db=dbname, charset='utf8')
 cursor = db_connection.cursor()
 
+def is_duplicate(url):
+    """데이터베이스에 이미 존재하는 url인지 확인합니다."""
+    sql = f"SELECT COUNT(*) FROM {table_N} WHERE url = %s"
+    cursor.execute(sql, (url,))
+    result = cursor.fetchone()
+    return result[0] > 0
+
 if __name__ == "__main__":
     # 각 학과 설정들을 리스트에 담습니다.
     departments = [약학과]
@@ -36,6 +43,10 @@ if __name__ == "__main__":
         # notice_list를 가져와서 출력합니다.
         notice_list = scraper.get_notice_list()
         for notice in notice_list:
+            if is_duplicate(notice['url']):
+                print(f"중복된 데이터, 건너뜀: {notice['url']}")
+                continue
+            
             try:
                 # 데이터베이스에 저장
                 sql = f"INSERT INTO {table_N} (title, date, url, site, category) VALUES (%s, %s, %s, %s, %s)"
