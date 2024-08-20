@@ -70,7 +70,7 @@ class NoticeScraper:
 
     def get_contents_html(self, url):
         self.driver.get(url)
-        time.sleep(5)  # 페이지 로딩 대기
+        time.sleep(3)  # 페이지 로딩 대기
 
         # link_sns 클래스를 가진 요소의 부모 요소 제거
         self.driver.execute_script("""

@@ -22,11 +22,11 @@ def run_scripts():
         print(f"{script} 실행 완료")
 
 # 매일 오후 2시에 실행
-schedule.every().day.at("09:08").do(run_scripts)
+schedule.every().day.at("02:40").do(run_scripts)
 
 while True:
     schedule.run_pending()
-    time.sleep(100)
+    time.sleep(10)
 
 
 # import subprocess
