@@ -1,8 +1,0 @@
-{
-    "driver_path": "/Users/minjeong/Downloads/geckodriver",
-    "host":"localhost", 
-    "username":"user1",
-    "password":"1234",
-    "db":"notice",
-    "es_pw":"dbr0vwg6lZHvuP_PqEo3"
-}
