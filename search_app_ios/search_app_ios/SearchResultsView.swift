@@ -35,38 +35,43 @@ struct SearchResultsView: View {
     @State private var errorMessage: String? = nil
 
     var body: some View {
-        VStack {
-            if isLoading {
-                ProgressView("Loading...")
-            } else if let errorMessage = errorMessage {
-                Text("Error: \(errorMessage)").foregroundColor(.red)
-            } else if results.isEmpty {
-                Text("No results found")
-            } else {
-                List(results) { result in
-                    VStack(alignment: .leading) {
-                        Text(result.site)
-                            .font(.headline)
-                        
-                        // Title as a clickable link
-                        Link(destination: URL(string: result.url)!) {
-                            Text(result.title)
-                                .font(.subheadline)
-                                .foregroundColor(.blue)
-                        }
-
-                        if let contentPreview = result.contentPreview {
-                            Text(contentPreview)
-                                .font(.footnote)
-                                .foregroundColor(.gray)
-                                .lineLimit(2) // Only show two lines of content
+        ZStack{
+            Color.appBackgroundColor
+                .ignoresSafeArea()
+            
+            VStack {
+                if isLoading {
+                    ProgressView("Loading...")
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)").foregroundColor(.red)
+                } else if results.isEmpty {
+                    Text("No results found")
+                } else {
+                    List(results) { result in
+                        VStack(alignment: .leading) {
+                            Text(result.site)
+                                .font(.headline)
+                            
+                            // Title as a clickable link
+                            Link(destination: URL(string: result.url)!) {
+                                Text(result.title)
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            if let contentPreview = result.contentPreview {
+                                Text(contentPreview)
+                                    .font(.footnote)
+                                    .foregroundColor(.gray)
+                                    .lineLimit(2) // Only show two lines of content
+                            }
                         }
                     }
                 }
             }
+            .onAppear(perform: fetchSearchResults)
+            .navigationTitle("Search Results")
         }
-        .onAppear(perform: fetchSearchResults)
-        .navigationTitle("Search Results")
     }
 
     func fetchSearchResults() {
@@ -74,24 +79,24 @@ struct SearchResultsView: View {
             errorMessage = "Invalid URL"
             return
         }
-
+        
         isLoading = true
         errorMessage = nil
-
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
             DispatchQueue.main.async {
                 isLoading = false
-
+                
                 if let error = error {
                     errorMessage = "Failed to load data: \(error.localizedDescription)"
                     return
                 }
-
+                
                 guard let data = data else {
                     errorMessage = "No data received"
                     return
                 }
-
+                
                 do {
                     let apiResponse = try JSONDecoder().decode(ApiResponse.self, from: data)
                     self.results = apiResponse.hits.hits.map { hit in
