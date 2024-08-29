@@ -1,0 +1,9 @@
+{
+    "driver_path": "path",
+    "host":"localhost", 
+    "username":"",
+    "password":"",
+    "db":"",
+    "db2":"",
+    "es_pw":""
+}
