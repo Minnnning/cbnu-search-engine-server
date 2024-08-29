@@ -5,7 +5,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
-import datetime, time, json
+import datetime, time
+from dotenv import load_dotenv
+import os
+
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
 
 class NoticeScraper:
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
@@ -17,10 +22,7 @@ class NoticeScraper:
         self.driver = self._init_driver()
 
     def _init_driver(self):
-        with open('config.json', 'r') as config_file:
-            config = json.load(config_file)
-            driver_path = config['driver_path']
-        
+        driver_path = os.getenv('DR_PATH')
         firefox_options = Options()
         firefox_options.add_argument("--headless")
         firefox_options.add_argument("--no-sandbox")

@@ -1,17 +1,16 @@
 import pymysql
-import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
+from dotenv import load_dotenv
+import os
 
-# DB 설정 데이터 가져오기
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-    db_config = {
-        'host': config['host'],
-        'user': config['username'],
-        'password': config['password'],
-        'db': config['db']
-    }
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
+
+hosturl =  os.getenv('DB_HOST')
+username = os.getenv('DB_USER')
+userpassword = os.getenv('DB_PASS')
+dbname = os.getenv('DB_NAME1')
 
 # Elasticsearch 설정 데이터 가져오기
 es_config = {
@@ -49,10 +48,10 @@ def get_last_indexed_id():
 # DB에서 데이터 읽기 (최신 `id` 이후 데이터만)
 def fetch_data_from_db(last_id):
     db_connection = pymysql.connect(
-        host=db_config['host'],
-        user=db_config['user'],
-        password=db_config['password'],
-        db=db_config['db'],
+        host=hosturl,
+        user=username,
+        password=userpassword,
+        db=dbname,
         charset='utf8'
     )
     cursor = db_connection.cursor()

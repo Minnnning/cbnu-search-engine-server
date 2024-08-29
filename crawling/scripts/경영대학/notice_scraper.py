@@ -6,11 +6,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
-import time, json
+import time
+from dotenv import load_dotenv
+import os
 
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-    driver_path = config['driver_path']
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
+
+driver_path = os.getenv('DR_PATH')
 
 class NoticeScraper:
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):

@@ -4,12 +4,13 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
 import time
-import json
+from dotenv import load_dotenv
+import os
 
-# Config 파일에서 드라이버 경로 읽기
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-    driver_path = config['driver_path']
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
+
+driver_path = os.getenv('DR_PATH')
 
 class NoticeScraper:
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):

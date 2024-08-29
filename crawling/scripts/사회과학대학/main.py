@@ -5,15 +5,17 @@ from 심리학과 import 심리학과
 from 정치외교학과 import 정치외교학과
 from 행정학과 import 행정학과
 
-import pymysql, json
-# DB 설정 데이터 가져오기
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-    driver_path = config['driver_path']
-    hosturl = config['host']
-    username = config['username']
-    userpassword = config['password']
-    dbname = config['db']
+import pymysql
+from dotenv import load_dotenv
+import os
+
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
+
+hosturl =  os.getenv('DB_HOST')
+username = os.getenv('DB_USER')
+userpassword = os.getenv('DB_PASS')
+dbname = os.getenv('DB_NAME1')
 
 table_N = 'notice_board'
 

@@ -1,5 +1,5 @@
 # main.py
-import pymysql, json
+import pymysql
 from notice_scraper import NoticeScraper
 from 교육학과 import 교육학과
 from 사회교육과 import 사회교육과, SocialEducationNoticeScraper
@@ -10,14 +10,16 @@ from 지구과학교육과 import 지구과학교육과
 from 체육교육과 import 체육교육과
 from 화학교육과 import 화학교육과
 
-# DB 설정 데이터 가져오기
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-    driver_path = config['driver_path']
-    hosturl = config['host']
-    username = config['username']
-    userpassword = config['password']
-    dbname = config['db']
+from dotenv import load_dotenv
+import os
+
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='test.env')
+
+hosturl =  os.getenv('DB_HOST')
+username = os.getenv('DB_USER')
+userpassword = os.getenv('DB_PASS')
+dbname = os.getenv('DB_NAME1')
 
 table_N = 'notice_board'
 
