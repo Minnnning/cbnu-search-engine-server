@@ -4,6 +4,7 @@ from typing import List
 import requests
 import pymysql
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
@@ -24,7 +25,9 @@ ES_INDEX = os.getenv('ES_INDEX')
 ES_USER = os.getenv('ES_USER')
 ES_PASSWORD = os.getenv('ES_PASS')
 
+# SQLAlchemy 엔진 생성 및 세션 설정
 engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME3}")
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
@@ -40,7 +43,7 @@ def tokenize_query_with_nori(query: str) -> List[str]:
     }
     
     response = requests.post(
-        f"{ES_HOST}/_analyze",
+        f"{ES_HOST}/{ES_INDEX}/_analyze",
         json=analyze_request_body,
         auth=(ES_USER, ES_PASSWORD)
     )
@@ -77,11 +80,19 @@ def search_elasticsearch(tokens: List[str]):
 # 검색어와 검색 시간을 MariaDB에 저장하는 함수
 def store_search_terms_in_db(tokens: List[str]):
     current_time = datetime.now()
+    db_session = SessionLocal()
     
-    with engine.connect() as connection:
+    try:
         for token in tokens:
             query = text("INSERT INTO search_tokens (token, search_time) VALUES (:token, :search_time)")
-            connection.execute(query, {"token": token, "search_time": current_time})
+            db_session.execute(query, {"token": token, "search_time": current_time})
+        
+        db_session.commit()  # 데이터베이스에 변경 사항 커밋
+    except Exception as e:
+        db_session.rollback()  # 오류 발생 시 롤백
+        raise HTTPException(status_code=500, detail="데이터 저장 중 오류가 발생했습니다.")
+    finally:
+        db_session.close()  # 세션 종료
 
 # 최근 24시간 이내에 가장 많이 검색된 토큰 상위 5개를 조회하는 함수
 def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5로 설정
@@ -97,7 +108,10 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
             LIMIT :limit
         """)
         result = connection.execute(query, {"past_24_hours": past_24_hours, "limit": limit})
-        return [{"token": row["token"], "count": row["count"]} for row in result]
+        
+        # 수정된 부분: .mappings()를 사용하여 딕셔너리로 변환
+        result_dict = result.mappings().all()
+        return [{"token": row["token"], "count": row["count"]} for row in result_dict]
 
 # 검색 API 엔드포인트
 @app.post("/search")
