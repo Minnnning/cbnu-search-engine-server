@@ -11,11 +11,12 @@ hosturl =  os.getenv('DB_HOST')
 username = os.getenv('DB_USER')
 userpassword = os.getenv('DB_PASS')
 dbname = os.getenv('DB_NAME1')
+es_pw = os.getenv('ES_PASS')
 
 # Elasticsearch 설정 데이터 가져오기
 es_config = {
     'hosts': ['http://localhost:9200'],
-    'http_auth': ('elastic', config['es_pw']),  # 기본 사용자와 비밀번호
+    'http_auth': ('elastic', es_pw),  # 기본 사용자와 비밀번호
     'scheme': 'http',
     'port': 9200
 }
