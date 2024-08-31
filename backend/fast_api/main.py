@@ -61,7 +61,8 @@ def search_elasticsearch(tokens: List[str]):
         "query": {
             "multi_match": {
                 "query": query_string,
-                "fields": ["title", "content"]
+                "fields": ["title^2", "content"],
+                "type": "best_fields"
             }
         }
     }
