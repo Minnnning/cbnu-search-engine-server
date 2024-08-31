@@ -17,7 +17,8 @@ DB_HOST = os.getenv('DB_HOST')
 DB_PORT = 3306
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASS')
-DB_NAME3 = os.getenv('DB_NAME3') 
+DB_NAME_SEARCH = os.getenv('DB_NAME3')
+DB_NAME_RESTAURANT = os.getenv('DB_NAME2')  
 
 # Elasticsearch 설정
 ES_HOST = os.getenv('ES_HOST')
@@ -26,8 +27,10 @@ ES_USER = os.getenv('ES_USER')
 ES_PASSWORD = os.getenv('ES_PASS')
 
 # SQLAlchemy 엔진 생성 및 세션 설정
-engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME3}")
+engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_SEARCH}")
+engine_restaurant = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_RESTAURANT}")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocalRestaurant = sessionmaker(autocommit=False, autoflush=False, bind=engine_restaurant)
 
 app = FastAPI()
 
@@ -85,6 +88,9 @@ def store_search_terms_in_db(tokens: List[str]):
     
     try:
         for token in tokens:
+            if token == '오늘':
+                continue
+            
             query = text("INSERT INTO search_tokens (token, search_time) VALUES (:token, :search_time)")
             db_session.execute(query, {"token": token, "search_time": current_time})
         
@@ -94,6 +100,20 @@ def store_search_terms_in_db(tokens: List[str]):
         raise HTTPException(status_code=500, detail="데이터 저장 중 오류가 발생했습니다.")
     finally:
         db_session.close()  # 세션 종료
+
+# restaurant DB의 menus 테이블에서 모든 데이터를 가져오는 함수
+def get_menus_from_db():
+    db_session = SessionLocalRestaurant()
+    
+    try:
+        query = text("SELECT * FROM menus")
+        result = db_session.execute(query).fetchall()  # 모든 결과 행을 가져옴
+        menus = [dict(row._mapping) for row in result]  # 각 행을 딕셔너리로 변환
+        return menus
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="메뉴 데이터를 가져오는 중 오류가 발생했습니다.")
+    finally:
+        db_session.close()
 
 # 최근 24시간 이내에 가장 많이 검색된 토큰 상위 5개를 조회하는 함수
 def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5로 설정
@@ -117,11 +137,18 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
 # 검색 API 엔드포인트
 @app.post("/search")
 def search(request: SearchRequest):
+    
     # 검색어 토큰화 (Nori 분석기 사용)
     tokens = tokenize_query_with_nori(request.query)
     
     # 검색어 토큰 저장 (MariaDB)
     store_search_terms_in_db(tokens)
+
+    # 검색어 필터링
+    if request.query in ["학식", "오늘의 학식"]:
+        # 메뉴 데이터베이스에서 데이터를 가져옴
+        menus = get_menus_from_db()
+        return {"menus": menus}
     
     # Elasticsearch로 검색 요청
     search_results = search_elasticsearch(tokens)
