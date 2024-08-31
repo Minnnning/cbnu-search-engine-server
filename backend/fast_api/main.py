@@ -166,3 +166,9 @@ def get_search_terms():
     return {
         "realtime_search_terms": top_search_terms
     }
+
+# 학식을 조회하는 API 엔드포인트
+@app.get("/menus")
+def get_menus():
+    menus = get_menus_from_db()
+    return menus
