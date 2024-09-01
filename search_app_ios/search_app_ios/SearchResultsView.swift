@@ -28,6 +28,11 @@ struct ApiResponse: Decodable {
     let hits: Hits
 }
 
+struct SearchApiResponse: Decodable {
+    let tokens: [String]
+    let results: ApiResponse // `results`가 전체 검색 결과를 포함
+}
+
 struct SearchResultsView: View {
     var searchQuery: String
     @State private var results: [SearchResult] = []
@@ -35,7 +40,7 @@ struct SearchResultsView: View {
     @State private var errorMessage: String? = nil
 
     var body: some View {
-        ZStack{
+        ZStack {
             Color.appBackgroundColor
                 .ignoresSafeArea()
             
@@ -52,7 +57,7 @@ struct SearchResultsView: View {
                             Text(result.site)
                                 .font(.headline)
                             
-                            // Title as a clickable link
+                            // 제목 클릭시 링크로 이동
                             Link(destination: URL(string: result.url)!) {
                                 Text(result.title)
                                     .font(.subheadline)
@@ -70,20 +75,29 @@ struct SearchResultsView: View {
                 }
             }
             .onAppear(perform: fetchSearchResults)
-            .navigationTitle("Search Results")
+            .navigationTitle("검색 결과")
         }
     }
 
     func fetchSearchResults() {
-        guard let url = URL(string: "http://elastic:dbr0vwg6lZHvuP_PqEo3@localhost:9200/notice_index/_search?q=title:\(searchQuery)") else {
+        guard let url = URL(string: "http://127.0.0.1:8000/search") else {
             errorMessage = "Invalid URL"
             return
         }
+
+        // 검색 요청을 위한 HTTP POST 요청
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // 요청 바디 설정 (검색어 포함)
+        let body: [String: Any] = ["query": searchQuery]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
         isLoading = true
         errorMessage = nil
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 isLoading = false
                 
@@ -98,8 +112,9 @@ struct SearchResultsView: View {
                 }
                 
                 do {
-                    let apiResponse = try JSONDecoder().decode(ApiResponse.self, from: data)
-                    self.results = apiResponse.hits.hits.map { hit in
+                    // FastAPI의 /search 엔드포인트에서 받은 응답을 파싱
+                    let decodedResponse = try JSONDecoder().decode(SearchApiResponse.self, from: data)
+                    self.results = decodedResponse.results.hits.hits.map { hit in
                         // 옵셔널 체이닝과 nil 병합 연산자를 사용해 안전하게 언래핑
                         let contentPreview = hit._source.content?.trimmingCharacters(in: .whitespacesAndNewlines)
                             .components(separatedBy: .newlines)

@@ -12,6 +12,7 @@
 		920545382C75FC410003DA5B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 920545372C75FC410003DA5B /* Preview Assets.xcassets */; };
 		9205453F2C75FDAA0003DA5B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9205453E2C75FDAA0003DA5B /* MainView.swift */; };
 		920545412C75FDD80003DA5B /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920545402C75FDD80003DA5B /* SearchResultsView.swift */; };
+		92BB79792C84E880001FDEA7 /* MenusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BB79782C84E880001FDEA7 /* MenusView.swift */; };
 		92FC80092C7B72CD0052E6DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FC80082C7B72CD0052E6DC /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 		920545372C75FC410003DA5B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9205453E2C75FDAA0003DA5B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		920545402C75FDD80003DA5B /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
+		92BB79782C84E880001FDEA7 /* MenusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenusView.swift; sourceTree = "<group>"; };
 		92FC80082C7B72CD0052E6DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,6 +65,7 @@
 				920545352C75FC410003DA5B /* search_app_ios.entitlements */,
 				920545362C75FC410003DA5B /* Preview Content */,
 				9205453E2C75FDAA0003DA5B /* MainView.swift */,
+				92BB79782C84E880001FDEA7 /* MenusView.swift */,
 			);
 			path = search_app_ios;
 			sourceTree = "<group>";
@@ -149,6 +152,7 @@
 				9205453F2C75FDAA0003DA5B /* MainView.swift in Sources */,
 				92FC80092C7B72CD0052E6DC /* ContentView.swift in Sources */,
 				920545302C75FC400003DA5B /* search_app_iosApp.swift in Sources */,
+				92BB79792C84E880001FDEA7 /* MenusView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
