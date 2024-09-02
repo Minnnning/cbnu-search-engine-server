@@ -88,9 +88,6 @@ def store_search_terms_in_db(tokens: List[str]):
     
     try:
         for token in tokens:
-            if token == '오늘':
-                continue
-            
             query = text("INSERT INTO search_tokens (token, search_time) VALUES (:token, :search_time)")
             db_session.execute(query, {"token": token, "search_time": current_time})
         
@@ -130,7 +127,6 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
         """)
         result = connection.execute(query, {"past_24_hours": past_24_hours, "limit": limit})
         
-        # 수정된 부분: .mappings()를 사용하여 딕셔너리로 변환
         result_dict = result.mappings().all()
         return [{"token": row["token"], "count": row["count"]} for row in result_dict]
 
@@ -170,5 +166,6 @@ def get_search_terms():
 # 학식을 조회하는 API 엔드포인트
 @app.get("/menus")
 def get_menus():
+    store_search_terms_in_db(["학식"])
     menus = get_menus_from_db()
     return menus
