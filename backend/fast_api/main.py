@@ -139,12 +139,6 @@ def search(request: SearchRequest):
     
     # 검색어 토큰 저장 (MariaDB)
     store_search_terms_in_db(tokens)
-
-    # 검색어 필터링
-    if request.query in ["학식", "오늘의 학식"]:
-        # 메뉴 데이터베이스에서 데이터를 가져옴
-        menus = get_menus_from_db()
-        return {"menus": menus}
     
     # Elasticsearch로 검색 요청
     search_results = search_elasticsearch(tokens)
