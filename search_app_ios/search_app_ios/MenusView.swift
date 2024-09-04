@@ -45,8 +45,10 @@ struct MenusView: View {
     
     // API 호출 함수
     func fetchMenus() {
-        guard let url = URL(string: "http://1.248.115.71:9334/menus") else {
-            errorMessage = "Invalid URL"
+        // 'Info.plist'에서 URL 가져오기
+        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "API_MENU") as? String,
+              let url = URL(string: urlString) else {
+            errorMessage = "Info.plist에서 유효하지 않은 URL"
             isLoading = false
             return
         }
@@ -56,12 +58,12 @@ struct MenusView: View {
                 isLoading = false
                 
                 if let error = error {
-                    errorMessage = "Failed to load data: \(error.localizedDescription)"
+                    errorMessage = "데이터 로드 실패: \(error.localizedDescription)"
                     return
                 }
 
                 guard let data = data else {
-                    errorMessage = "No data received"
+                    errorMessage = "데이터를 받지 못했습니다"
                     return
                 }
 
@@ -69,7 +71,7 @@ struct MenusView: View {
                     let decodedResponse = try JSONDecoder().decode([Menu].self, from: data)
                     self.menus = decodedResponse
                 } catch {
-                    errorMessage = "Failed to parse data: \(error.localizedDescription)"
+                    errorMessage = "데이터 파싱 실패: \(error.localizedDescription)"
                 }
             }
         }.resume()

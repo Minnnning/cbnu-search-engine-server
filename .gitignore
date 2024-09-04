@@ -47,3 +47,5 @@ yarn-error.log*
 config.json
 
 venv
+
+.plist

@@ -5,6 +5,8 @@ struct MainView: View {
     @State private var isSearchActive: Bool = false
     @State private var isMenuViewActive: Bool = false // '학식' 또는 '오늘의 학식'인 경우의 플래그
     @State private var searchTerms: [SearchTerm] = []
+    @State private var isLoading: Bool = true // 데이터 로딩 상태를 나타내는 변수
+    @State private var errorMessage: String? = nil // 오류 메시지를 저장하는 변수
 
     // 타이머를 이용하여 10초마다 API를 호출하도록 설정
     private let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
@@ -116,10 +118,14 @@ struct MainView: View {
 
     // API 호출 함수
     func fetchSearchTerms() {
-        guard let url = URL(string: "http://1.248.115.71:9334/search-terms") else {
-            print("Invalid URL")
+        // 'Info.plist'에서 URL 가져오기
+        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "API_SEARCH_TERM") as? String,
+              let url = URL(string: urlString) else {
+            errorMessage = "Info.plist에서 유효하지 않은 URL"
+            isLoading = false
             return
         }
+
 
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
@@ -153,4 +159,8 @@ struct SearchTerm: Identifiable, Decodable {
 
 struct RealtimeSearchTermsResponse: Decodable {
     let realtime_search_terms: [SearchTerm]
+}
+
+#Preview {
+    MenusView()
 }

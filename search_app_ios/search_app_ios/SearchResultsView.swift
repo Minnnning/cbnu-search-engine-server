@@ -80,10 +80,14 @@ struct SearchResultsView: View {
     }
 
     func fetchSearchResults() {
-        guard let url = URL(string: "http://1.248.115.71:9334/search") else {
-            errorMessage = "Invalid URL"
+        // 'Info.plist'에서 URL 가져오기
+        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "API_SEARCH") as? String,
+              let url = URL(string: urlString) else {
+            errorMessage = "Info.plist에서 유효하지 않은 URL"
+            isLoading = false
             return
         }
+
 
         // 검색 요청을 위한 HTTP POST 요청
         var request = URLRequest(url: url)
@@ -139,3 +143,6 @@ struct SearchResultsView: View {
     }
 }
 
+#Preview {
+    MenusView()
+}
