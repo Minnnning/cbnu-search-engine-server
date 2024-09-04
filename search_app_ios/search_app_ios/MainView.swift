@@ -12,7 +12,7 @@ struct MainView: View {
     private let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.appBackgroundColor
                     .ignoresSafeArea()
@@ -88,29 +88,20 @@ struct MainView: View {
 
                     Spacer()
 
-                    // 검색 결과 페이지로의 NavigationLink
-                    NavigationLink(
-                        destination: SearchResultsView(searchQuery: searchQuery), // 목적지
-                        isActive: $isSearchActive,
-                        label: {
-                            EmptyView()
-                        }
-                    )
-
-                    // 메뉴 페이지로의 NavigationLink
-                    NavigationLink(
-                        destination: MenusView(), // 목적지
-                        isActive: $isMenuViewActive,
-                        label: {
-                            EmptyView()
-                        }
-                    )
+                    // 빈 네비게이션 링크 제거
+                    // 기존의 `isActive` 방식을 `navigationDestination`로 대체
                 }
                 .navigationTitle("") // 타이틀을 빈 문자열로 설정하여 상단에 타이틀이 보이지 않게 설정
                 .navigationBarTitleDisplayMode(.inline) // 네비게이션 바 타이틀을 인라인으로 설정
                 .onAppear(perform: fetchSearchTerms) // 뷰가 나타날 때 실시간 검색어 가져오기
                 .onReceive(timer) { _ in
                     fetchSearchTerms() // 타이머에 따라 일정 시간마다 API 호출
+                }
+                .navigationDestination(isPresented: $isSearchActive) {
+                    SearchResultsView(searchQuery: searchQuery)
+                }
+                .navigationDestination(isPresented: $isMenuViewActive) {
+                    MenusView()
                 }
             }
         }
@@ -152,7 +143,7 @@ struct MainView: View {
 
 // API 응답 구조에 맞춘 데이터 모델
 struct SearchTerm: Identifiable, Decodable {
-    let id = UUID()
+    var id: UUID = UUID()
     let token: String
     let count: Int
 }

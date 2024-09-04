@@ -48,4 +48,4 @@ config.json
 
 venv
 
-.plist
+search_app_ios/search-app-ios-Info.plist
