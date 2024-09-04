@@ -45,7 +45,7 @@ struct MenusView: View {
     
     // API 호출 함수
     func fetchMenus() {
-        guard let url = URL(string: "http://127.0.0.1:8000/menus") else {
+        guard let url = URL(string: "http://1.248.115.71:9334/menus") else {
             errorMessage = "Invalid URL"
             isLoading = false
             return

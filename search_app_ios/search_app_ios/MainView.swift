@@ -116,7 +116,7 @@ struct MainView: View {
 
     // API 호출 함수
     func fetchSearchTerms() {
-        guard let url = URL(string: "http://127.0.0.1:8000/search-terms") else {
+        guard let url = URL(string: "http://1.248.115.71:9334/search-terms") else {
             print("Invalid URL")
             return
         }

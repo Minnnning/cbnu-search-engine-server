@@ -24,6 +24,7 @@
 		920545372C75FC410003DA5B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9205453E2C75FDAA0003DA5B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		920545402C75FDD80003DA5B /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
+		924D6B442C873E6500C582B5 /* search-app-ios-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "search-app-ios-Info.plist"; sourceTree = SOURCE_ROOT; };
 		92BB79782C84E880001FDEA7 /* MenusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenusView.swift; sourceTree = "<group>"; };
 		92FC80082C7B72CD0052E6DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +59,7 @@
 		9205452E2C75FC400003DA5B /* search_app_ios */ = {
 			isa = PBXGroup;
 			children = (
+				924D6B442C873E6500C582B5 /* search-app-ios-Info.plist */,
 				920545402C75FDD80003DA5B /* SearchResultsView.swift */,
 				9205452F2C75FC400003DA5B /* search_app_iosApp.swift */,
 				920545332C75FC410003DA5B /* Assets.xcassets */,
@@ -287,6 +289,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "search-app-ios-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "충북대검색";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -327,6 +330,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "search-app-ios-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "충북대검색";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

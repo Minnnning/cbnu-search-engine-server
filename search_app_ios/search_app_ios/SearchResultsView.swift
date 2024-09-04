@@ -80,7 +80,7 @@ struct SearchResultsView: View {
     }
 
     func fetchSearchResults() {
-        guard let url = URL(string: "http://127.0.0.1:8000/search") else {
+        guard let url = URL(string: "http://1.248.115.71:9334/search") else {
             errorMessage = "Invalid URL"
             return
         }
