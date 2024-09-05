@@ -143,6 +143,3 @@ struct SearchResultsView: View {
     }
 }
 
-#Preview {
-    MenusView()
-}

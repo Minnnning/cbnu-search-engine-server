@@ -9,7 +9,7 @@ struct MainView: View {
     @State private var errorMessage: String? = nil // 오류 메시지를 저장하는 변수
 
     // 타이머를 이용하여 10초마다 API를 호출하도록 설정
-    private let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationStack {
@@ -128,6 +128,8 @@ struct MainView: View {
                 print("No data received")
                 return
             }
+            // 서버로부터 받은 실제 데이터를 출력하여 확인
+                print("Received data: \(String(data: data, encoding: .utf8) ?? "No readable data")")
 
             do {
                 let decodedResponse = try JSONDecoder().decode(RealtimeSearchTermsResponse.self, from: data)
@@ -143,7 +145,7 @@ struct MainView: View {
 
 // API 응답 구조에 맞춘 데이터 모델
 struct SearchTerm: Identifiable, Decodable {
-    var id: UUID = UUID()
+    let id = UUID()
     let token: String
     let count: Int
 }
@@ -153,5 +155,5 @@ struct RealtimeSearchTermsResponse: Decodable {
 }
 
 #Preview {
-    MenusView()
+    MainView()
 }
