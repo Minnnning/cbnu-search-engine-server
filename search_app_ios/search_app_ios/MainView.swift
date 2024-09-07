@@ -129,7 +129,7 @@ struct MainView: View {
                 return
             }
             // 서버로부터 받은 실제 데이터를 출력하여 확인
-                print("Received data: \(String(data: data, encoding: .utf8) ?? "No readable data")")
+                //print("Received data: \(String(data: data, encoding: .utf8) ?? "No readable data")")
 
             do {
                 let decodedResponse = try JSONDecoder().decode(RealtimeSearchTermsResponse.self, from: data)
