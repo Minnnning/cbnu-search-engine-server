@@ -2,7 +2,7 @@
 from notice_scraper import NoticeScraper
 from 전기공학부 import 전기공학부
 from 전자공학부 import 전자공학부, ElectronicEngineeringNoticeScraper
-from 정보통신공학부 import 정보통신공학부
+from 정보통신공학부 import 정보통신공학부 ,InformationAndCommunicationEngineeringNoticeScraper
 from 컴퓨터공학과 import 컴퓨터공학과
 from 지능로봇공학과 import 지능로봇공학과, IntelligentRoboticsNoticeScraper
 from 반도체공학부 import 반도체공학부
@@ -66,6 +66,15 @@ def get_scraper(department):
             department.notice_list_selector,
             department.notice_contents_selector
         )
+    
+    elif department == 정보통신공학부:
+        return InformationAndCommunicationEngineeringNoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
 
     else:
         return NoticeScraper(
@@ -78,7 +87,7 @@ def get_scraper(department):
 
 if __name__ == "__main__":
     # 각 학과 설정들을 리스트에 담습니다.
-    departments = [전기공학부, 전자공학부, 정보통신공학부, 컴퓨터공학과, 지능로봇공학과, 반도체공학부, 소프트웨어학과]
+    departments = [정보통신공학부, 전자공학부, 전기공학부, 컴퓨터공학과, 지능로봇공학과, 반도체공학부, 소프트웨어학과]
 
     for department in departments:
         print(f"스크래핑 시작: {department.site}")
