@@ -57,17 +57,25 @@ def tokenize_query_with_nori(query: str) -> List[str]:
     else:
         raise HTTPException(status_code=response.status_code, detail="Nori 분석기를 사용한 토큰화 실패")
 
-# Elasticsearch에 검색 요청을 보내는 함수
-def search_elasticsearch(tokens: List[str]):
+# Elasticsearch에 검색 요청을 보내는 함수 (페이지네이션 포함)
+def search_elasticsearch(tokens: List[str], page: int = 0, size: int = 10):
     query_string = " ".join(tokens)
     es_query = {
         "query": {
             "multi_match": {
                 "query": query_string,
-                "fields": ["title^2", "content"],
-                "type": "best_fields"
+                "fields": ["title^2", "content"],  # 검색할 필드 목록 및 가중치
+                "fuzziness": "AUTO"  # 오타 허용
             }
-        }
+        },
+        "highlight": {
+            "fields": {
+                "title": {},  # 제목에서 매칭된 단어 하이라이트
+                "content": {}  # 본문에서 매칭된 단어 하이라이트
+            }
+        },
+        "from": page * size,  # 어느 결과부터 가져올지
+        "size": size  # 몇 개의 결과를 가져올지
     }
     
     response = requests.get(
@@ -80,6 +88,7 @@ def search_elasticsearch(tokens: List[str]):
         return response.json()
     else:
         raise HTTPException(status_code=response.status_code, detail="Elasticsearch 검색에 실패했습니다.")
+
 
 # 검색어와 검색 시간을 MariaDB에 저장하는 함수
 def store_search_terms_in_db(tokens: List[str]):
@@ -132,22 +141,21 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
 
 # 검색 API 엔드포인트
 @app.post("/search")
-def search(request: SearchRequest):
+def search(request: SearchRequest, page: int = 0, size: int = 10):
     
     # 검색어 토큰화 (Nori 분석기 사용)
     tokens = tokenize_query_with_nori(request.query)
     
     # 검색어 토큰 저장 (MariaDB)
-    store_search_terms_in_db(tokens)
+    store_search_terms_in_db(request.query)
     
     # Elasticsearch로 검색 요청
-    search_results = search_elasticsearch(tokens)
+    search_results = search_elasticsearch(tokens, page=page, size=size)
     
     return {
         "tokens": tokens,
         "results": search_results
     }
-
 # 실시간 검색어를 조회하는 API 엔드포인트
 @app.get("/search-terms")
 def get_search_terms():
