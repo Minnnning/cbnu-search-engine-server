@@ -58,8 +58,8 @@ def tokenize_query_with_nori(query: str) -> List[str]:
         raise HTTPException(status_code=response.status_code, detail="Nori 분석기를 사용한 토큰화 실패")
 
 # Elasticsearch에 검색 요청을 보내는 함수 (페이지네이션 포함)
-def search_elasticsearch(tokens: List[str], page: int = 0, size: int = 10):
-    query_string = " ".join(tokens)
+def search_elasticsearch(query_string, page: int = 0, size: int = 10):
+    #query_string = " ".join(tokens)
     es_query = {
         "query": {
             "multi_match": {
@@ -91,10 +91,10 @@ def search_elasticsearch(tokens: List[str], page: int = 0, size: int = 10):
 
 
 # 검색어와 검색 시간을 MariaDB에 저장하는 함수
-def store_search_terms_in_db(tokens: List[str]):
+def store_search_terms_in_db(tokens: str):
     current_time = datetime.now()
     db_session = SessionLocal()
-    
+    tokens = tokens.split()
     try:
         for token in tokens:
             query = text("INSERT INTO search_tokens (token, search_time) VALUES (:token, :search_time)")
@@ -144,16 +144,17 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
 def search(request: SearchRequest, page: int = 0, size: int = 10):
     
     # 검색어 토큰화 (Nori 분석기 사용)
-    tokens = tokenize_query_with_nori(request.query)
+    # tokens = tokenize_query_with_nori(request.query)
     
-    # 검색어 토큰 저장 (MariaDB)
+    # 검색어 저장 (MariaDB)
     store_search_terms_in_db(request.query)
     
     # Elasticsearch로 검색 요청
-    search_results = search_elasticsearch(tokens, page=page, size=size)
+    search_results = search_elasticsearch(request.query, page=page, size=size)
     
     return {
-        "tokens": tokens,
+        #"tokens": tokens,
+        "query": request.query,
         "results": search_results
     }
 # 실시간 검색어를 조회하는 API 엔드포인트
