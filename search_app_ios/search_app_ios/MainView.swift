@@ -8,7 +8,7 @@ struct MainView: View {
     @State private var isLoading: Bool = true // 데이터 로딩 상태를 나타내는 변수
     @State private var errorMessage: String? = nil // 오류 메시지를 저장하는 변수
 
-    // 타이머를 이용하여 10초마다 API를 호출하도록 설정
+    // 타이머를 이용하여 20초마다 API를 호출하도록 설정
     private let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -37,17 +37,7 @@ struct MainView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
 
                         Button(action: {
-                            if searchQuery.isEmpty {
-                                // 검색어가 비어 있을 경우, 플레이스홀더의 내용을 기본 검색어로 사용
-                                searchQuery = "오늘의 학식"
-                                isMenuViewActive = true
-                            } else {
-                                if searchQuery == "학식" || searchQuery == "오늘의 학식" {
-                                    isMenuViewActive = true
-                                } else {
-                                    isSearchActive = true
-                                }
-                            }
+                            performSearch()
                         }) {
                             Text("검색")
                                 .font(.headline)
@@ -73,9 +63,15 @@ struct MainView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.gray)
 
+                                // 검색어 클릭 이벤트 처리 (검은색 텍스트)
                                 Text(term.token)
                                     .font(.subheadline)
+                                    .foregroundColor(.black) // 검은색 텍스트로 설정
                                     .padding(.leading, 5)
+                                    .onTapGesture {
+                                        searchQuery = term.token
+                                        performSearch()
+                                    }
 
                                 Spacer()
                             }
@@ -87,9 +83,6 @@ struct MainView: View {
                     .padding(.horizontal)
 
                     Spacer()
-
-                    // 빈 네비게이션 링크 제거
-                    // 기존의 `isActive` 방식을 `navigationDestination`로 대체
                 }
                 .navigationTitle("") // 타이틀을 빈 문자열로 설정하여 상단에 타이틀이 보이지 않게 설정
                 .navigationBarTitleDisplayMode(.inline) // 네비게이션 바 타이틀을 인라인으로 설정
@@ -107,6 +100,21 @@ struct MainView: View {
         }
     }
 
+    // 검색을 수행하는 함수
+    func performSearch() {
+        if searchQuery.isEmpty {
+            // 검색어가 비어 있을 경우, 플레이스홀더의 내용을 기본 검색어로 사용
+            searchQuery = "오늘의 학식"
+            isMenuViewActive = true
+        } else {
+            if searchQuery == "학식" || searchQuery == "오늘의 학식" {
+                isMenuViewActive = true
+            } else {
+                isSearchActive = true
+            }
+        }
+    }
+
     // API 호출 함수
     func fetchSearchTerms() {
         // 'Info.plist'에서 URL 가져오기
@@ -116,7 +124,6 @@ struct MainView: View {
             isLoading = false
             return
         }
-
 
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
