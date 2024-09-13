@@ -2,4 +2,4 @@
 
 source venv/bin/activate
 
-python fast_api/main.py
+nohup uvicorn fast_api.main:app --host 0.0.0.0 --port 9334 > fastapi_output.log 2>&1 &
