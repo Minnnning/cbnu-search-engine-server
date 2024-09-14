@@ -138,6 +138,23 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
         
         result_dict = result.mappings().all()
         return [{"token": row["token"], "count": row["count"]} for row in result_dict]
+    
+# 학과별 공지사항을 notice_table에서 가져오는 함수
+def get_notices_by_department(department: str):
+    db_session = SessionLocal()  # Using the same session for the search database
+
+    try:
+        # SQL query to fetch notices based on the department (site field)
+        query = text("SELECT * FROM notice_table WHERE site = :department")
+        result = db_session.execute(query, {"department": department}).fetchall()
+        
+        # Convert the result to a list of dictionaries
+        notices = [dict(row._mapping) for row in result]
+        return notices
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="학과 공지사항을 가져오는 중 오류가 발생했습니다.")
+    finally:
+        db_session.close()
 
 # 검색 API 엔드포인트
 @app.post("/search")
@@ -172,3 +189,18 @@ def get_menus():
     store_search_terms_in_db(["학식"])
     menus = get_menus_from_db()
     return menus
+
+# 학과 공지사항 조회 API 엔드포인트
+@app.get("/notices/{department}")
+def get_notices(department: str):
+    # 학과별 공지사항 가져오기
+    notices = get_notices_by_department(department)
+    
+    if not notices:
+        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
+    
+    # 공지사항 반환
+    return {
+        "department": department,
+        "notices": notices
+    }
