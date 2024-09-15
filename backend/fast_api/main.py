@@ -34,6 +34,20 @@ SessionLocalRestaurant = sessionmaker(autocommit=False, autoflush=False, bind=en
 
 app = FastAPI()
 
+# 학과 목록 예시
+departments = ["경영정보학과대학원", "경영정보학과", "국제경영학과", "경영학부",
+               "기계공학부", "환경공학과", "도시공학과", "화학공학과", "건축학과", "토목공학부", "신소재공학과", "공업화학과", "건축공학과", "안전공학과",
+               "식물의학과", "환경생명화학과", "바이오시스템공학과", "지역건설공학과", "식품생명공학과", "특용식물학과", "원예학과", "산림학과", "축산학과", "목재종이과학과", "식물자원학과", "농업경제학과",
+               "수학교육과", "교육학과", "물리교육과", "윤리교육과", "생물교육과", "국어교육과", "화학교육과", "지구과학교육과", "지리교육과", "역사교육과", "사회교육과", "영어교육과", "체육교육과",
+               "사회학과", "경제학과", "행정학과", "정치외교학과", "심리학과",
+               "주거환경학과", "소비자학과", "식품영양학과", "의류학과", "아동복지학과",
+               "수의예과", "수의학과", "약학과", "간호학과", "의학과",
+               "디자인학과", "조형예술학과",
+               "철학과", "러시아언어문화학과", "국어국문학과", "프랑스언어문화학과", "영어영문학과", "중어중문학과", "독일언어문화학과", "고고미술사학과",
+               "수학과", "생물학과", "화학과", "정보통계학과", "미생물학과", "천문우주학과", "물리학과", "생화학과", "지구환경과학과",
+               "전자공학부", "정보통신공학부", "전기공학부", "지능로봇공학과", "반도체공학부", "소프트웨어학과", "컴퓨터공학과",
+               "학생생활관", "sw중심사업단", "충북대취업지원본부", "국제교류본부", "linc사업단", "충북대공지사항"]
+
 # 요청 바디 모델
 class SearchRequest(BaseModel):
     query: str
@@ -156,24 +170,54 @@ def get_notices_by_department(department: str):
     finally:
         db_session.close()
 
-# 검색 API 엔드포인트
+# 학과 공지사항 조회
+def get_notices(department: str):
+    # 학과별 공지사항 가져오기
+    notices = get_notices_by_department(department)
+    
+    if not notices:
+        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
+    
+    # 공지사항 반환
+    return {
+        "department": department,
+        "notices": notices
+    }
+
+# 검색어에 학과명을 포함하는지 확인하는 함수
+def extract_department_from_query(query: str) -> str:
+    for department in departments:
+        if department in query:
+            return department
+    return None
+
+# 검색 API 엔드포인트 수정
 @app.post("/search")
 def search(request: SearchRequest, page: int = 0, size: int = 10):
+    # 학과명 추출
+    department = extract_department_from_query(request.query)
     
-    # 검색어 토큰화 (Nori 분석기 사용)
-    # tokens = tokenize_query_with_nori(request.query)
-    
-    # 검색어 저장 (MariaDB)
+    if department:
+        # 학과명이 포함된 경우 해당 학과 공지사항 조회
+        notices = get_notices_by_department(department)
+        
+        # 공지사항 반환
+        return {
+            "query": request.query,
+            "department_notices": notices
+        }
+
+    # 검색어 토큰화 및 저장
     store_search_terms_in_db(request.query)
     
     # Elasticsearch로 검색 요청
     search_results = search_elasticsearch(request.query, page=page, size=size)
     
     return {
-        #"tokens": tokens,
         "query": request.query,
         "results": search_results
     }
+
 # 실시간 검색어를 조회하는 API 엔드포인트
 @app.get("/search-terms")
 def get_search_terms():
@@ -190,17 +234,3 @@ def get_menus():
     menus = get_menus_from_db()
     return menus
 
-# 학과 공지사항 조회 API 엔드포인트
-@app.get("/notices/{department}")
-def get_notices(department: str):
-    # 학과별 공지사항 가져오기
-    notices = get_notices_by_department(department)
-    
-    if not notices:
-        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
-    
-    # 공지사항 반환
-    return {
-        "department": department,
-        "notices": notices
-    }
