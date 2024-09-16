@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from typing import List
 import requests
@@ -17,8 +17,9 @@ DB_HOST = os.getenv('DB_HOST')
 DB_PORT = 3306
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASS')
-DB_NAME_SEARCH = os.getenv('DB_NAME3')
+DB_NAME_NOTICE = os.getenv('DB_NAME1')
 DB_NAME_RESTAURANT = os.getenv('DB_NAME2')  
+DB_NAME_SEARCH = os.getenv('DB_NAME3')
 
 # Elasticsearch 설정
 ES_HOST = os.getenv('ES_HOST')
@@ -27,9 +28,11 @@ ES_USER = os.getenv('ES_USER')
 ES_PASSWORD = os.getenv('ES_PASS')
 
 # SQLAlchemy 엔진 생성 및 세션 설정
-engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_SEARCH}")
+engine_notice = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_NOTICE}")
+engine_search_term = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_SEARCH}")
 engine_restaurant = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_RESTAURANT}")
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocalNotice = sessionmaker(autocommit=False, autoflush=False, bind=engine_notice)
+SessionLocalSearchTerm = sessionmaker(autocommit=False, autoflush=False, bind=engine_search_term)
 SessionLocalRestaurant = sessionmaker(autocommit=False, autoflush=False, bind=engine_restaurant)
 
 app = FastAPI()
@@ -51,6 +54,15 @@ departments = ["경영정보학과대학원", "경영정보학과", "국제경�
 # 요청 바디 모델
 class SearchRequest(BaseModel):
     query: str
+
+# SearchResult와 일치하는 Pydantic 모델 정의
+class SearchResult(BaseModel):
+    id: str
+    site: str
+    title: str
+    url: str
+    date: str
+    contentPreview: str = None  # 내용 미리보기는 옵션
 
 # 검색어를 Nori 분석기를 통해 토큰화하는 함수
 def tokenize_query_with_nori(query: str) -> List[str]:
@@ -107,7 +119,7 @@ def search_elasticsearch(query_string, page: int = 0, size: int = 10):
 # 검색어와 검색 시간을 MariaDB에 저장하는 함수
 def store_search_terms_in_db(tokens: str):
     current_time = datetime.now()
-    db_session = SessionLocal()
+    db_session = SessionLocalSearchTerm()
     tokens = tokens.split()
     try:
         for token in tokens:
@@ -139,7 +151,7 @@ def get_menus_from_db():
 def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5로 설정
     past_24_hours = datetime.now() - timedelta(hours=24)
     
-    with engine.connect() as connection:
+    with engine_search_term.connect() as connection:
         query = text("""
             SELECT token, COUNT(*) as count 
             FROM search_tokens 
@@ -153,17 +165,34 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
         result_dict = result.mappings().all()
         return [{"token": row["token"], "count": row["count"]} for row in result_dict]
     
-# 학과별 공지사항을 notice_table에서 가져오는 함수
-def get_notices_by_department(department: str):
-    db_session = SessionLocal()  # Using the same session for the search database
+# 학과별 공지사항을 notice_board에서 가져오는 함수
+def get_notices_by_department(department: str, page: int, size: int) -> List[SearchResult]:
+    db_session = SessionLocalNotice()
 
     try:
-        # SQL query to fetch notices based on the department (site field)
-        query = text("SELECT * FROM notice_table WHERE site = :department")
-        result = db_session.execute(query, {"department": department}).fetchall()
+        # 페이지네이션을 위한 LIMIT과 OFFSET 설정
+        query = text("""
+            SELECT * FROM notice_board WHERE site = :department
+            ORDER BY date DESC
+            LIMIT :limit OFFSET :offset
+        """)
+        result = db_session.execute(query, {"department": department, "limit": size, "offset": page * size}).fetchall()
         
-        # Convert the result to a list of dictionaries
-        notices = [dict(row._mapping) for row in result]
+        # 결과를 SearchResult 리스트로 변환
+        notices = []
+        for row in result:
+            date_str = row._mapping['date'].strftime("%Y-%m-%d")  # 날짜 형식 변환
+            content_preview = (row._mapping['content'][:100].strip() if row._mapping['content'] else None)
+            notice = SearchResult(
+                id=str(row._mapping['id']),
+                site=row._mapping['site'],
+                title=row._mapping['title'],
+                url=row._mapping['url'],
+                date=date_str,
+                contentPreview=content_preview
+            )
+            notices.append(notice)
+
         return notices
     except Exception as e:
         raise HTTPException(status_code=500, detail="학과 공지사항을 가져오는 중 오류가 발생했습니다.")
@@ -199,12 +228,15 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
     
     if department:
         # 학과명이 포함된 경우 해당 학과 공지사항 조회
-        notices = get_notices_by_department(department)
+        notices = get_notices_by_department(department, page, size)
+        
+        if not notices:
+            raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
         
         # 공지사항 반환
         return {
             "query": request.query,
-            "department_notices": notices
+            "results": notices
         }
 
     # 검색어 토큰화 및 저장
@@ -217,6 +249,18 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
         "query": request.query,
         "results": search_results
     }
+
+# 학과 공지사항 조회 API
+@app.get("/notices/{department}", response_model=List[SearchResult])
+def get_department_notices(department: str, page: int = Query(0), size: int = Query(10)):
+    # 학과별 공지사항 가져오기
+    notices = get_notices_by_department(department, page, size)
+    
+    if not notices:
+        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
+    
+    # 공지사항 반환
+    return notices
 
 # 실시간 검색어를 조회하는 API 엔드포인트
 @app.get("/search-terms")
