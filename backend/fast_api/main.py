@@ -85,7 +85,6 @@ def tokenize_query_with_nori(query: str) -> List[str]:
 
 # Elasticsearch에 검색 요청을 보내는 함수 (페이지네이션 포함)
 def search_elasticsearch(query_string, page: int = 0, size: int = 10):
-    #query_string = " ".join(tokens)
     es_query = {
         "query": {
             "multi_match": {
@@ -229,6 +228,8 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
     if department:
         # 학과명이 포함된 경우 해당 학과 공지사항 조회
         notices = get_notices_by_department(department, page, size)
+        # 실시간 검색어 저장
+        store_search_terms_in_db(department)
         
         if not notices:
             raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
