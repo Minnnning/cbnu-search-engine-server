@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import os
 
 # .env 파일을 로드하여 환경 변수로 설정
-load_dotenv(dotenv_path='test.env')
+load_dotenv(dotenv_path='crawling/test.env')
 
 class NoticeScraper:
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):

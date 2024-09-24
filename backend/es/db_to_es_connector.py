@@ -5,20 +5,22 @@ from dotenv import load_dotenv
 import os
 
 # .env 파일을 로드하여 환경 변수로 설정
-load_dotenv(dotenv_path='test.env')
+load_dotenv(dotenv_path='backend/test.env')
 
 hosturl =  os.getenv('DB_HOST')
 username = os.getenv('DB_USER')
 userpassword = os.getenv('DB_PASS')
 dbname = os.getenv('DB_NAME1')
 es_pw = os.getenv('ES_PASS')
+es_host = os.getenv('ES_HOST')
+es_port = os.getenv('ES_PORT')
 
 # Elasticsearch 설정 데이터 가져오기
 es_config = {
-    'hosts': ['http://localhost:9200'],
+    'hosts': [es_host],
     'http_auth': ('elastic', es_pw),  # 기본 사용자와 비밀번호
     'scheme': 'http',
-    'port': 9200
+    'port': es_port
 }
 
 # Elasticsearch 클라이언트 설정

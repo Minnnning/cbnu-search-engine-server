@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import os
 
 # .env 파일을 로드하여 환경 변수로 설정
-load_dotenv(dotenv_path='test.env')
+load_dotenv(dotenv_path='crawling/test.env')
 
 driver_path = os.getenv('DR_PATH')
 

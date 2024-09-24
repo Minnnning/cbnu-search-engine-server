@@ -10,7 +10,9 @@ target_minute2="00"
 target_hour3="23"
 target_minute3="30"
 
-/backend/backend_run.sh
+./backend/backend_run.sh
+
+echo "크롤링 시작"
 
 while true
 do
@@ -24,7 +26,7 @@ do
         echo "공지사항 스크립트를 실행합니다."
         
         # 실행할 스크립트
-        /crawling/notice_script_run.sh
+        ./crawling/notice_script_run.sh
         
         # 실행 후 1분 대기 (같은 스크립트가 반복 실행되지 않도록)
         sleep 60
@@ -35,7 +37,7 @@ do
         echo "메뉴 스크립트를 실행합니다. (일요일)"
         
         # 실행할 스크립트
-        /crawling/menu_script_run.sh
+        ./crawling/menu_script_run.sh
         
         # 실행 후 1분 대기 (같은 스크립트가 반복 실행되지 않도록)
         sleep 60
@@ -46,7 +48,7 @@ do
         echo "es db 스크립트를 실행합니다."
         
         # 실행할 스크립트
-        /backend/es_connect_run.sh
+        ./backend/es_connect_run.sh
         
         # 실행 후 1분 대기 (같은 스크립트가 반복 실행되지 않도록)
         sleep 60

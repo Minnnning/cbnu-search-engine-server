@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # 가상환경 활성화
-source venv/bin/activate
+source crawling/venv/bin/activate
 
-python scripts/학식/main.py
+python crawling/scripts/학식/main.py
+
+echo "학식 크롤링"
 
 deactivate
