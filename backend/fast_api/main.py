@@ -188,7 +188,7 @@ def get_notices_by_department(department: str, page: int = 0, size: int = 10) ->
                 title=row._mapping['title'],
                 url=row._mapping['url'],
                 date=date_str,
-                content=content_preview
+                contentPreview=content_preview
             )
             notices.append(notice)
 
@@ -238,6 +238,7 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
         source = hit['_source']
         results.append({
             "id": hit['_id'],
+            "score":hit['_score'],
             "site": source.get('site', ''),
             "title": source.get('title', ''),
             "url": source.get('url', ''),
