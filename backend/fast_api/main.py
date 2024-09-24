@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import os
 
 # .env 파일을 로드하여 환경 변수로 설정
-load_dotenv(dotenv_path='test.env')
+load_dotenv(dotenv_path='backend/test.env')
 
 # MariaDB 설정
 DB_HOST = os.getenv('DB_HOST')
