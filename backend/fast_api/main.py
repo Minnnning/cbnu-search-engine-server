@@ -275,7 +275,7 @@ def get_search_terms():
 # 학식을 조회하는 API 엔드포인트
 @app.get("/menus")
 def get_menus():
-    store_search_terms_in_db(["학식"])
+    store_search_terms_in_db("학식")
     menus = get_menus_from_db()
     return menus
 
