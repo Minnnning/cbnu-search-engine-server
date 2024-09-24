@@ -9,7 +9,7 @@ struct MainView: View {
     @State private var errorMessage: String? = nil // 오류 메시지를 저장하는 변수
 
     // 타이머를 이용하여 20초마다 API를 호출하도록 설정
-    private let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 100, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationStack {

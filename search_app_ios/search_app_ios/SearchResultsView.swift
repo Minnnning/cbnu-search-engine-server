@@ -13,30 +13,20 @@ struct SearchResult: Identifiable, Equatable {
     }
 }
 
+
 struct ApiResponse: Decodable {
-    struct Hits: Decodable {
-        struct InnerHits: Decodable {
-            struct Source: Decodable {
-                let site: String
-                let title: String
-                let url: String
-                let date: String
-                let content: String?
-            }
-
-            let _id: String
-            let _source: Source
-        }
-
-        let hits: [InnerHits]
-    }
-
-    let hits: Hits
+    let id: String
+    let site: String
+    let title: String
+    let url: String
+    let date: String
+    let contentPreview: String?
 }
 
+
 struct SearchApiResponse: Decodable {
-    let tokens: [String]
-    let results: ApiResponse
+    //let query: String
+    let results: [ApiResponse]
 }
 
 struct SearchResultsView: View {
@@ -44,7 +34,7 @@ struct SearchResultsView: View {
     @State private var results: [SearchResult] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String? = nil
-    @State private var currentPage = 1
+    @State private var currentPage = 0
     @State private var hasMoreResults = true // 더 많은 결과가 있는지 여부
 
     private let pageSize = 10
@@ -161,16 +151,16 @@ struct SearchResultsView: View {
                 do {
                     let decodedResponse = try JSONDecoder().decode(SearchApiResponse.self, from: data)
                     
-                    let newResults = decodedResponse.results.hits.hits.map { hit in
-                        let dateString = hit._source.date
+                    let newResults = decodedResponse.results.map { response in
+                        let dateString = response.date
                         let date: String
                         if let parsedDate = inputDateFormatter.date(from: dateString) {
                             date = outputDateFormatter.string(from: parsedDate)
                         } else {
-                            date = "Invalid date"
+                            date = dateString
                         }
 
-                        let contentPreview = hit._source.content?.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let contentPreview = response.contentPreview?.trimmingCharacters(in: .whitespacesAndNewlines)
                             .components(separatedBy: .newlines)
                             .joined(separator: " ")
                             .prefix(100)
@@ -178,10 +168,10 @@ struct SearchResultsView: View {
                         let previewText = contentPreview.map(String.init) ?? ""
 
                         return SearchResult(
-                            id: hit._id,
-                            site: hit._source.site,
-                            title: hit._source.title,
-                            url: hit._source.url,
+                            id: response.id,
+                            site: response.site,
+                            title: response.title,
+                            url: response.url,
                             date: date,
                             contentPreview: previewText.isEmpty ? nil : previewText
                         )

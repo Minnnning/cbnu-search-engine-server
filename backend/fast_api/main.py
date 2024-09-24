@@ -165,9 +165,9 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
         return [{"token": row["token"], "count": row["count"]} for row in result_dict]
     
 # 학과별 공지사항을 notice_board에서 가져오는 함수
-def get_notices_by_department(department: str, page: int, size: int) -> List[SearchResult]:
+def get_notices_by_department(department: str, page: int = 0, size: int = 10) -> List[SearchResult]:
     db_session = SessionLocalNotice()
-
+    page = page + 1
     try:
         # 페이지네이션을 위한 LIMIT과 OFFSET 설정
         query = text("""
@@ -188,7 +188,7 @@ def get_notices_by_department(department: str, page: int, size: int) -> List[Sea
                 title=row._mapping['title'],
                 url=row._mapping['url'],
                 date=date_str,
-                contentPreview=content_preview
+                content=content_preview
             )
             notices.append(notice)
 
