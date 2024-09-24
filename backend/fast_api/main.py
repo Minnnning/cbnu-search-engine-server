@@ -198,20 +198,6 @@ def get_notices_by_department(department: str, page: int = 0, size: int = 10) ->
     finally:
         db_session.close()
 
-# 학과 공지사항 조회
-def get_notices(department: str):
-    # 학과별 공지사항 가져오기
-    notices = get_notices_by_department(department)
-    
-    if not notices:
-        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
-    
-    # 공지사항 반환
-    return {
-        "department": department,
-        "notices": notices
-    }
-
 # 검색어에 학과명을 포함하는지 확인하는 함수
 def extract_department_from_query(query: str) -> str:
     for department in departments:
@@ -236,7 +222,7 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
         
         # 공지사항 반환
         return {
-            "query": request.query,
+            "query": department,
             "results": notices
         }
 
@@ -245,23 +231,24 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
     
     # Elasticsearch로 검색 요청
     search_results = search_elasticsearch(request.query, page=page, size=size)
+
+    # Elasticsearch 응답에서 필요한 정보만 추출
+    results = []
+    for hit in search_results['hits']['hits']:
+        source = hit['_source']
+        results.append({
+            "id": hit['_id'],
+            "site": source.get('site', ''),
+            "title": source.get('title', ''),
+            "url": source.get('url', ''),
+            "date": source.get('date', ''),
+            "contentPreview": source.get('content', '')
+        })
     
     return {
         "query": request.query,
-        "results": search_results
+        "results": results
     }
-
-# 학과 공지사항 조회 API
-@app.get("/notices/{department}", response_model=List[SearchResult])
-def get_department_notices(department: str, page: int = Query(0), size: int = Query(10)):
-    # 학과별 공지사항 가져오기
-    notices = get_notices_by_department(department, page, size)
-    
-    if not notices:
-        raise HTTPException(status_code=404, detail="해당 학과의 공지사항을 찾을 수 없습니다.")
-    
-    # 공지사항 반환
-    return notices
 
 # 실시간 검색어를 조회하는 API 엔드포인트
 @app.get("/search-terms")

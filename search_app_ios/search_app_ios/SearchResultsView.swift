@@ -25,7 +25,7 @@ struct ApiResponse: Decodable {
 
 
 struct SearchApiResponse: Decodable {
-    //let query: String
+    let query: String
     let results: [ApiResponse]
 }
 
