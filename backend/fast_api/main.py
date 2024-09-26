@@ -181,7 +181,7 @@ def get_notices_by_department(department: str, page: int = 0, size: int = 10) ->
         notices = []
         for row in result:
             date_str = row._mapping['date'].strftime("%Y-%m-%d")  # 날짜 형식 변환
-            content_preview = (row._mapping['content'][:100].strip() if row._mapping['content'] else None)
+            content_preview = (row._mapping['content'][:100].strip() if row._mapping['content'] else ' ')
             notice = SearchResult(
                 id=str(row._mapping['id']),
                 site=row._mapping['site'],
