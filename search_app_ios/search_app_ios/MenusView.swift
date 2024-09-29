@@ -46,6 +46,14 @@ struct MenusView: View {
                             }
                             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // 페이지 스타일의 탭뷰
                         }
+                        
+                        Spacer() // Content Spacer to push the message to the bottom
+
+                                                // 좌우로 넘기세요 문구를 추가
+                                                Text("<<      좌우로 넘기세요      >>")
+                                                    .font(.footnote)
+                                                    .foregroundColor(.gray)
+                                                    .padding(.bottom, 20)
                     }
                 }
             }
