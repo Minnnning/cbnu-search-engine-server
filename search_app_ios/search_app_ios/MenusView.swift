@@ -168,7 +168,7 @@ struct MenuListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .center, spacing: 16) {
+            VStack(spacing: 20) {
                 if menus.isEmpty {
                     Text("해당 날짜에 메뉴가 없습니다.")
                         .foregroundColor(.gray)
@@ -180,19 +180,20 @@ struct MenuListView: View {
                                 Text(" \(menuTime(menu.time))")
                                     .font(.subheadline)
                                     .padding(.bottom, 2)
-        
+                                
                                 Text(menu.menu) // 메뉴 끝에 공백 20개 추가
                                     .font(.body)
                                     .padding(.top, 2)
-                                    .multilineTextAlignment(.leading) // 텍스트 왼쪽 정렬
+                                Spacer()
                             }
+                            .frame(width: 300) // 고정된 너비 설정
                             .padding()
                             .background(Color.white)
                             .cornerRadius(10)
                             .shadow(radius: 2)
-                            Spacer() // 남는 공간을 채워서 가로 길이를 고정
                         }
-                        .frame(minWidth: 320, maxWidth: 320, alignment: .leading)
+                        .frame(width: 350, alignment: .leading)
+                        
                     }
                 }
             }
