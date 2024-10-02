@@ -49,3 +49,42 @@ config.json
 venv
 
 search_app_ios/search-app-ios-Info.plist
+
+# swift
+# Xcode 관련 파일들
+.DS_Store
+UserInterfaceState.xcuserstate
+xcuserdata/
+
+# 빌드 결과물
+build/
+DerivedData/
+
+# Xcode가 생성하는 로그 파일
+*.xcactivitylog
+*.xcdebugger
+*.xccheckout
+*.xcscmblueprint
+
+# iOS 및 macOS 파일들
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm
+Package.resolved
+.build/
+
+# CocoaPods 관련
+Pods/
+Podfile.lock
+
+# Carthage 관련
+Carthage/Build/
+
+# Fastlane 관련
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output

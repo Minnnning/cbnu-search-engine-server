@@ -175,13 +175,13 @@ struct MenuListView: View {
                         .font(.body)
                 } else {
                     ForEach(menus) { menu in
-                        HStack {
                             VStack(alignment: .leading) {
-                                Text(" \(menuTime(menu.time))")
-                                    .font(.subheadline)
+                                Text("\(menuTime(menu.time))")
+                                    .font(.headline)
                                     .padding(.bottom, 2)
+                                    .frame(width: 300, alignment: .leading)
                                 
-                                Text(menu.menu) // 메뉴 끝에 공백 20개 추가
+                                Text(menu.menu)
                                     .font(.body)
                                     .padding(.top, 2)
                                 Spacer()
@@ -191,9 +191,6 @@ struct MenuListView: View {
                             .background(Color.white)
                             .cornerRadius(10)
                             .shadow(radius: 2)
-                        }
-                        .frame(width: 350, alignment: .leading)
-                        
                     }
                 }
             }

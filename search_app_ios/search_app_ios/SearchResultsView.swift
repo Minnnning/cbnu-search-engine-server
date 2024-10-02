@@ -196,3 +196,5 @@ struct SearchResultsView: View {
         fetchSearchResults()
     }
 }
+
+
