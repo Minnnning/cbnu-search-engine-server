@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 가상환경 활성화
-source venv/bin/activate
+source backend/venv/bin/activate
 
-python es/db_to_es_connector.py
+python backend/es/db_to_es_connector.py
 
 deactivate
