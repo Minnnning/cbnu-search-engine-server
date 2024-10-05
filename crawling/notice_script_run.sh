@@ -15,7 +15,8 @@ scripts=("crawling/scripts/경영대학/main.py"
          "crawling/scripts/의과대학/main.py"
          "crawling/scripts/인문대학/main.py"
          "crawling/scripts/자연과학대학/main.py"
-         "crawling/scripts/전자정보대학/main.py")
+         "crawling/scripts/전자정보대학/main.py"
+         "crawling/scripts/공통/main.py")
 
 # 각 스크립트 실행
 for script in "${scripts[@]}"

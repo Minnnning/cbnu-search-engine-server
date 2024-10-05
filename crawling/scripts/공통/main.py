@@ -9,7 +9,7 @@ from sw중심사업단 import sw중심사업단, SWCenterNoticeScraper
 from 도서관 import 도서관, LibraryNoticeScraper
 from 지식재산전문인력양성센터 import 지식재산전문인력양성센터,IntellectualPropertyProfessionalTrainingCenterNoticeScraper
 from 충북대학교 import 충북대학교, ChungbukUniversityNoticeScraper
-from 충북대취업지원본부 import 취업지원본부, EmploymentSupportCenterNoticeScraper
+from 학생생활관 import 학생생활관, DormitoryNoticeScraper
 
 
 # .env 파일을 로드하여 환경 변수로 설정
@@ -85,8 +85,8 @@ def get_scraper(department):
             department.notice_contents_selector
         )
     
-    elif department == 취업지원본부:
-        return EmploymentSupportCenterNoticeScraper(
+    elif department == 학생생활관:
+        return DormitoryNoticeScraper(
             department.url,
             department.site,
             department.category,
@@ -105,7 +105,7 @@ def get_scraper(department):
 
 if __name__ == "__main__":
     # 각 학과 설정들을 리스트에 담습니다.
-    departments = [취업지원본부, 충북대학교, 지식재산전문인력양성센터, 도서관, 국제교류본부, linc사업단, sw중심사업단]
+    departments = [학생생활관, 충북대학교, 지식재산전문인력양성센터, 도서관, 국제교류본부, linc사업단, sw중심사업단]
 
     for department in departments:
         print(f"스크래핑 시작: {department.site}")

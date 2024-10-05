@@ -13,9 +13,11 @@ class EmploymentSupportCenterNoticeScraper(NoticeScraper):
         
         for item in list_items:
             print(item.text)
+
             try:
                 # 'div' 태그 찾기 시도
-                row = item.find_element(By.TAG_NAME, "div")
+                row = item.find_element(By.TAG_NAME, "span")
+                print(row.text)
                 url = item.find_element(By.TAG_NAME, "a").get_attribute("href").strip()
                 title = row.find_element(By.TAG_NAME, "span").text.strip()
                 # 날짜 처리 및 공지 추가
@@ -41,5 +43,5 @@ class 취업지원본부:
     url = "https://hrd.chungbuk.ac.kr/board_XuXE11"
     site = "취업지원본부"
     category = "공지사항"
-    notice_list_selector = "li"
+    notice_list_selector = "li.clear"
     notice_contents_selector = "#bd_312_2935 > div.rd.clear > div.rd_body.clear > article > div"
