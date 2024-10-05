@@ -10,6 +10,8 @@ from 도서관 import 도서관, LibraryNoticeScraper
 from 지식재산전문인력양성센터 import 지식재산전문인력양성센터,IntellectualPropertyProfessionalTrainingCenterNoticeScraper
 from 충북대학교 import 충북대학교, ChungbukUniversityNoticeScraper
 from 학생생활관 import 학생생활관, DormitoryNoticeScraper
+from 스포츠센터 import 스포츠센터, SportCenterNoticeScraper
+from 충북대취업지원본부 import 취업지원본부, EmploymentSupportCenterNoticeScraper
 
 
 # .env 파일을 로드하여 환경 변수로 설정
@@ -94,6 +96,24 @@ def get_scraper(department):
             department.notice_contents_selector
         )
     
+    elif department == 스포츠센터:
+        return SportCenterNoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
+    
+    elif department == 취업지원본부:
+        return EmploymentSupportCenterNoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
+    
     else:
         return NoticeScraper(
             department.url,
@@ -105,7 +125,7 @@ def get_scraper(department):
 
 if __name__ == "__main__":
     # 각 학과 설정들을 리스트에 담습니다.
-    departments = [학생생활관, 충북대학교, 지식재산전문인력양성센터, 도서관, 국제교류본부, linc사업단, sw중심사업단]
+    departments = [취업지원본부, 스포츠센터, 학생생활관, 충북대학교, 지식재산전문인력양성센터, 도서관, 국제교류본부, linc사업단, sw중심사업단]
 
     for department in departments:
         print(f"스크래핑 시작: {department.site}")
@@ -124,11 +144,10 @@ if __name__ == "__main__":
                 
                 contents_text = " " # 내용 없음
                 try:
-                    # 데이터베이스에 저장
-                    # sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
-                    # values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
-                    # cursor.execute(sql, values)
-                    # db_connection.commit()
+                    sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
+                    values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
+                    cursor.execute(sql, values)
+                    db_connection.commit()
                     print(f"Data inserted successfully: title={notice['title']}, site={notice['site']}, {notice['date']}")
 
                 except pymysql.Error as e:
@@ -142,13 +161,12 @@ if __name__ == "__main__":
                     continue
                 
                 contents_text = clean_text(scraper.get_contents_text(notice['url'])) # 내용까지 스크래핑하는 코드 추가
-                print(contents_text)
+                #print(contents_text)
                 try:
-                    # 데이터베이스에 저장
-                    # sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
-                    # values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
-                    # cursor.execute(sql, values)
-                    # db_connection.commit()
+                    sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
+                    values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
+                    cursor.execute(sql, values)
+                    db_connection.commit()
                     print(f"Data inserted successfully: title={notice['title']}, site={notice['site']}, {notice['date']}")
 
                 except pymysql.Error as e:

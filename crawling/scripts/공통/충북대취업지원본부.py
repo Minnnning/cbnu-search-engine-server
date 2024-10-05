@@ -1,8 +1,8 @@
 from notice_scraper import NoticeScraper
-import time, datetime
 from selenium.webdriver.common.by import By
+import time
 
-class DormitoryNoticeScraper(NoticeScraper):
+class EmploymentSupportCenterNoticeScraper(NoticeScraper):
 
     def get_notice_list(self):
         self.driver.get(self.url)
@@ -16,7 +16,7 @@ class DormitoryNoticeScraper(NoticeScraper):
                 continue
             # 날짜 형식을 변환
             raw_date = row[3].text.strip()
-            formatted_date = raw_date.replace("/", "-")
+            formatted_date = raw_date.replace(".", "-")
             notice = {
                 "site": self.site,
                 "category": self.category,
@@ -24,13 +24,14 @@ class DormitoryNoticeScraper(NoticeScraper):
                 "url": row[1].find_element(By.TAG_NAME, "a").get_attribute("href").strip(),
                 "date": formatted_date
             }
+            
             notices.append(notice)
         return notices
 
-class 학생생활관:
-    # 학생생활관 공지사항 설정
-    url = "https://dorm.chungbuk.ac.kr/home/sub.php?menukey=20039"
-    site = "학생생활관"
+class 취업지원본부:
+    # 취업지원본부 공지사항 설정
+    url = "https://hrd.chungbuk.ac.kr/board_XuXE11"
+    site = "취업지원본부"
     category = "공지사항"
     notice_list_selector = "tbody tr"
-    notice_contents_selector = ".substance"
+    notice_contents_selector = "article"
