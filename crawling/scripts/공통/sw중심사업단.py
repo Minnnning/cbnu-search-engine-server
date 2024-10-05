@@ -2,14 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
+from notice_scraper import NoticeScraper
 
-class NoticeScraper:
-    def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
-        self.url = url
-        self.site = site
-        self.category = category
-        self.notice_list_selector = notice_list_selector
-        self.notice_contents_selector = notice_contents_selector
+class SWCenterNoticeScraper(NoticeScraper):
 
     def get_notice_list(self):
         response = requests.get(self.url)
@@ -38,19 +33,11 @@ class NoticeScraper:
         contents = soup.select_one(self.notice_contents_selector).get_text(strip=True)
         return contents
 
-# Usage
-url = "https://swapi.cbnu.ac.kr/v1/notice?page=1&limit=20&sort=-createdAt"
-site = "sw중심대학사업단"
-category = "공지사항"
-notice_list_selector = "pre"
-notice_contents_selector = ".ck-content"
 
-scraper = NoticeScraper(url, site, category, notice_list_selector, notice_contents_selector)
-notice_list = scraper.get_notice_list()
-
-for notice in notice_list:
-    print(f"Title: {notice['title']}")
-    print(f"URL: {notice['url']}")
-    print(f"Date: {notice['date']}")
-    contents_text = scraper.get_contents_text(notice['url'])
-    print(f"Contents:\n{contents_text}")
+class sw중심사업단:
+    # sw중심사업단 공지사항 설정
+    url = "https://swapi.cbnu.ac.kr/v1/notice?page=1&limit=20&sort=-createdAt"
+    site = "sw중심사업단"
+    category = "공지사항"
+    notice_list_selector = "pre"
+    notice_contents_selector = ".ck-content"

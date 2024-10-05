@@ -1,9 +1,16 @@
 # main.py
-from notice_scraper import NoticeScraper
-
 import pymysql
 from dotenv import load_dotenv
 import os
+from notice_scraper import NoticeScraper
+from 국제교류본부 import 국제교류본부, InternationalExchangeCenterNoticeScraper
+from linc사업단 import linc사업단
+from sw중심사업단 import sw중심사업단, SWCenterNoticeScraper
+from 도서관 import 도서관, LibraryNoticeScraper
+from 지식재산전문인력양성센터 import 지식재산전문인력양성센터,IntellectualPropertyProfessionalTrainingCenterNoticeScraper
+from 충북대학교 import 충북대학교, ChungbukUniversityNoticeScraper
+from 충북대취업지원본부 import 취업지원본부, EmploymentSupportCenterNoticeScraper
+
 
 # .env 파일을 로드하여 환경 변수로 설정
 load_dotenv(dotenv_path='crawling/test.env')
@@ -33,8 +40,8 @@ def is_duplicate(url):
     return result[0] > 0
 
 def get_scraper(department):
-    if department == 건축학과:
-        return ArchitectureDepartmentNoticeScraper(
+    if department == sw중심사업단:
+        return SWCenterNoticeScraper(
             department.url,
             department.site,
             department.category,
@@ -42,8 +49,8 @@ def get_scraper(department):
             department.notice_contents_selector
         )
     
-    elif department == 기계공학부:
-        return MechanicalEngineeringNoticeScraper(
+    elif department == 도서관:
+        return LibraryNoticeScraper(
             department.url,
             department.site,
             department.category,
@@ -51,8 +58,8 @@ def get_scraper(department):
             department.notice_contents_selector
         )
     
-    elif department == 토목공학부:
-        return CivilEngineeringNoticeScraper(
+    elif department == 지식재산전문인력양성센터:
+        return IntellectualPropertyProfessionalTrainingCenterNoticeScraper(
             department.url,
             department.site,
             department.category,
@@ -60,8 +67,26 @@ def get_scraper(department):
             department.notice_contents_selector
         )
     
-    elif department == 화학공학과:
-        return ChemicalEngineeringNoticeScraper(
+    elif department == 국제교류본부:
+        return InternationalExchangeCenterNoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
+    
+    elif department == 충북대학교:
+        return ChungbukUniversityNoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
+    
+    elif department == 취업지원본부:
+        return EmploymentSupportCenterNoticeScraper(
             department.url,
             department.site,
             department.category,
@@ -80,7 +105,7 @@ def get_scraper(department):
 
 if __name__ == "__main__":
     # 각 학과 설정들을 리스트에 담습니다.
-    departments = [건축공학과, 건축학과, 공업화학과, 기계공학부, 도시공학과, 신소재공학과, 안전공학과, 토목공학부, 화학공학과, 환경공학과]
+    departments = [취업지원본부, 충북대학교, 지식재산전문인력양성센터, 도서관, 국제교류본부, linc사업단, sw중심사업단]
 
     for department in departments:
         print(f"스크래핑 시작: {department.site}")
@@ -90,28 +115,53 @@ if __name__ == "__main__":
 
         # notice_list를 가져와서 출력합니다.
         notice_list = scraper.get_notice_list()
-        for notice in notice_list:
-            if is_duplicate(notice['url']):
-                print(f"중복된 데이터, 건너뜀: {notice['url']}")
-                continue
-            
-            contents_text = clean_text(scraper.get_contents_text(notice['url'])) # 내용까지 스크래핑하는 코드 추가
-            try:
-                # 데이터베이스에 저장
-                sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
-                values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
-                cursor.execute(sql, values)
-                db_connection.commit()
-                print(f"Data inserted successfully: title={notice['title']}, site={notice['site']}")
 
-            except pymysql.Error as e:
-                print(f"Error {e.args[0]}, {e.args[1]}")
-                db_connection.rollback()
-            
+        if department.site == "도서관":
+            for notice in notice_list:
+                if is_duplicate(notice['title']):
+                    print(f"중복된 데이터, 건너뜀: {notice['title']}")
+                    continue
+                
+                contents_text = " " # 내용 없음
+                try:
+                    # 데이터베이스에 저장
+                    # sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
+                    # values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
+                    # cursor.execute(sql, values)
+                    # db_connection.commit()
+                    print(f"Data inserted successfully: title={notice['title']}, site={notice['site']}, {notice['date']}")
+
+                except pymysql.Error as e:
+                    print(f"Error {e.args[0]}, {e.args[1]}")
+                    db_connection.rollback()
+
+        else:
+            for notice in notice_list:
+                if is_duplicate(notice['url']):
+                    print(f"중복된 데이터, 건너뜀: {notice['url']}")
+                    continue
+                
+                contents_text = clean_text(scraper.get_contents_text(notice['url'])) # 내용까지 스크래핑하는 코드 추가
+                print(contents_text)
+                try:
+                    # 데이터베이스에 저장
+                    # sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
+                    # values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
+                    # cursor.execute(sql, values)
+                    # db_connection.commit()
+                    print(f"Data inserted successfully: title={notice['title']}, site={notice['site']}, {notice['date']}")
+
+                except pymysql.Error as e:
+                    print(f"Error {e.args[0]}, {e.args[1]}")
+                    db_connection.rollback()
 
         scraper.close()
         print(f"스크래핑 완료 및 브라우저 종료: {department.site}\n")
 
     # WebDriver 및 DB 연결 닫기
     db_connection.close()
-    print("공과대학 작업 완료.")
+    print("공통 작업 완료.")
+
+
+
+
