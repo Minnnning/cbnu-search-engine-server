@@ -33,8 +33,8 @@ do
     fi
 
     # 두 번째 스크립트 실행 (메뉴) - 일요일에만 실행
-    if [[ "$current_hour" == "$target_hour2" && "$current_minute" == "$target_minute2" && "$current_day" == "7" ]]; then
-        echo "메뉴 스크립트를 실행합니다. (일요일)"
+    if [[ "$current_hour" == "$target_hour2" && "$current_minute" == "$target_minute2" && "$current_day" == "6" ]]; then
+        echo "메뉴 스크립트를 실행합니다. (토요일)"
         
         # 실행할 스크립트
         ./crawling/menu_script_run.sh
