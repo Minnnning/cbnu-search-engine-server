@@ -78,6 +78,7 @@ struct MainView: View {
                             .padding()
                             .background(Color.white)
                             .cornerRadius(10)
+                            .shadow(radius: 2)
                         }
                     }
                     .padding(.horizontal)
