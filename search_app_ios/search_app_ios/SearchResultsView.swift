@@ -1,4 +1,5 @@
 import SwiftUI
+import MapKit
 
 struct SearchResult: Identifiable, Equatable {
     let id: String
@@ -7,12 +8,13 @@ struct SearchResult: Identifiable, Equatable {
     let url: String
     let date: String
     let contentPreview: String?
+    let latitude: Double?
+    let longitude: Double?
 
     static func == (lhs: SearchResult, rhs: SearchResult) -> Bool {
         return lhs.id == rhs.id
     }
 }
-
 
 struct ApiResponse: Decodable {
     let id: String
@@ -21,8 +23,9 @@ struct ApiResponse: Decodable {
     let url: String
     let date: String
     let contentPreview: String?
+    let latitude: Double?
+    let longitude: Double?
 }
-
 
 struct SearchApiResponse: Decodable {
     let query: String
@@ -88,6 +91,13 @@ struct SearchResultsView: View {
                                     .font(.footnote)
                                     .foregroundColor(.gray)
                                     .lineLimit(2) // Only show two lines of content
+                            }
+                            if let latitude = result.latitude, let longitude = result.longitude {
+                                Map(coordinateRegion: .constant(MKCoordinateRegion(
+                                    center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                                )))
+                                .frame(height: 200)
                             }
                         }
                         .onAppear {
