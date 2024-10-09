@@ -189,9 +189,7 @@ def get_notices_by_department(department: str, page: int = 0, size: int = 10) ->
                 title=row._mapping['title'],
                 url=row._mapping['url'],
                 date=date_str,
-                contentPreview=content_preview,
-                latitude = "",
-                longitude = ""
+                contentPreview=content_preview
             )
             notices.append(notice)
 
