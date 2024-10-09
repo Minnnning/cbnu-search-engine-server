@@ -60,7 +60,7 @@ def fetch_data_from_db(last_id):
     cursor = db_connection.cursor()
 
     # 데이터 조회 쿼리 (last_id 이후 데이터만 가져오기)
-    query = "SELECT id, url, title, content, category, site, date FROM notice_board WHERE id > %s"
+    query = "SELECT id, url, title, content, category, site, date, latitude, longitude FROM notice_board WHERE id > %s"
     cursor.execute(query, (last_id,))
 
     # 결과 가져오기
@@ -80,7 +80,9 @@ def generate_docs(data):
                 "content": row[3],
                 "category": row[4],
                 "site": row[5],
-                "date": row[6].strftime('%Y-%m-%d %H:%M:%S')  # 날짜 형식 변환
+                "date": row[6].strftime('%Y-%m-%d %H:%M:%S'),  # 날짜 형식 변환
+                "latitude": row[7],
+                "longitude": row[8]
             }
         }
 
