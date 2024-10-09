@@ -12,6 +12,7 @@
 		920545382C75FC410003DA5B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 920545372C75FC410003DA5B /* Preview Assets.xcassets */; };
 		9205453F2C75FDAA0003DA5B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9205453E2C75FDAA0003DA5B /* MainView.swift */; };
 		920545412C75FDD80003DA5B /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920545402C75FDD80003DA5B /* SearchResultsView.swift */; };
+		9257275C2CB6814700B00EAF /* FullMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9257275B2CB6813800B00EAF /* FullMapView.swift */; };
 		92BB79792C84E880001FDEA7 /* MenusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BB79782C84E880001FDEA7 /* MenusView.swift */; };
 		92FC80092C7B72CD0052E6DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FC80082C7B72CD0052E6DC /* ContentView.swift */; };
 /* End PBXBuildFile section */
@@ -25,6 +26,7 @@
 		9205453E2C75FDAA0003DA5B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		920545402C75FDD80003DA5B /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
 		924D6B442C873E6500C582B5 /* search-app-ios-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "search-app-ios-Info.plist"; sourceTree = SOURCE_ROOT; };
+		9257275B2CB6813800B00EAF /* FullMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullMapView.swift; sourceTree = "<group>"; };
 		92BB79782C84E880001FDEA7 /* MenusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenusView.swift; sourceTree = "<group>"; };
 		92FC80082C7B72CD0052E6DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,6 +63,7 @@
 			children = (
 				924D6B442C873E6500C582B5 /* search-app-ios-Info.plist */,
 				920545402C75FDD80003DA5B /* SearchResultsView.swift */,
+				9257275B2CB6813800B00EAF /* FullMapView.swift */,
 				9205452F2C75FC400003DA5B /* search_app_iosApp.swift */,
 				920545332C75FC410003DA5B /* Assets.xcassets */,
 				92FC80082C7B72CD0052E6DC /* ContentView.swift */,
@@ -154,6 +157,7 @@
 				9205453F2C75FDAA0003DA5B /* MainView.swift in Sources */,
 				92FC80092C7B72CD0052E6DC /* ContentView.swift in Sources */,
 				920545302C75FC400003DA5B /* search_app_iosApp.swift in Sources */,
+				9257275C2CB6814700B00EAF /* FullMapView.swift in Sources */,
 				92BB79792C84E880001FDEA7 /* MenusView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

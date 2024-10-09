@@ -32,13 +32,20 @@ struct SearchApiResponse: Decodable {
     let results: [ApiResponse]
 }
 
+struct MapPin: Identifiable {
+    let id = UUID() // 각 핀에 고유 ID를 부여하기 위해 UUID 사용
+    let coordinate: CLLocationCoordinate2D
+}
+
 struct SearchResultsView: View {
     var searchQuery: String
     @State private var results: [SearchResult] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String? = nil
     @State private var currentPage = 0
-    @State private var hasMoreResults = true // 더 많은 결과가 있는지 여부
+    @State private var hasMoreResults = true
+    @State private var selectedLocation: (latitude: Double, longitude: Double)? = nil
+    @State private var showFullMap = false
 
     private let pageSize = 10
 
@@ -93,11 +100,23 @@ struct SearchResultsView: View {
                                     .lineLimit(2) // Only show two lines of content
                             }
                             if let latitude = result.latitude, let longitude = result.longitude {
+                                let pin = MapPin(coordinate: CLLocationCoordinate2D(latitude: latitude + 0.0002, longitude: longitude))
+                                
                                 Map(coordinateRegion: .constant(MKCoordinateRegion(
                                     center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
-                                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                                )))
+                                    span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                                )), annotationItems: [pin]) { location in
+                                    MapAnnotation(coordinate: location.coordinate) {
+                                        Image(systemName: "mappin")
+                                            .foregroundColor(.red)
+                                            .font(.title)
+                                    }
+                                }
                                 .frame(height: 200)
+                                .onTapGesture {
+                                    selectedLocation = (latitude: latitude, longitude: longitude)
+                                    showFullMap = true
+                                }
                             }
                         }
                         .onAppear {
@@ -116,6 +135,11 @@ struct SearchResultsView: View {
         }
         .onAppear(perform: fetchSearchResults)
         .navigationTitle("검색 결과")
+        .sheet(isPresented: $showFullMap) {
+            if let location = selectedLocation {
+                FullMapView(latitude: location.latitude, longitude: location.longitude)
+            }
+        }
     }
 
     func fetchSearchResults() {
@@ -183,7 +207,9 @@ struct SearchResultsView: View {
                             title: response.title,
                             url: response.url,
                             date: date,
-                            contentPreview: previewText.isEmpty ? nil : previewText
+                            contentPreview: previewText.isEmpty ? nil : previewText,
+                            latitude: response.latitude,
+                            longitude: response.longitude
                         )
                     }
                     
