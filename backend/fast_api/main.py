@@ -55,7 +55,7 @@ departments = ["경영정보학과대학원", "경영정보학과", "국제경�
 class SearchRequest(BaseModel):
     query: str
 
-# SearchResult와 일치하는 Pydantic 모델 정의
+# SearchResult와 일치하는 모델 정의 
 class SearchResult(BaseModel):
     id: str
     site: str
@@ -63,6 +63,8 @@ class SearchResult(BaseModel):
     url: str
     date: str
     contentPreview: str = None  # 내용 미리보기는 옵션
+    latitude: float = None
+    longitude: float = None
 
 # 검색어를 Nori 분석기를 통해 토큰화하는 함수
 def tokenize_query_with_nori(query: str) -> List[str]:
@@ -187,7 +189,9 @@ def get_notices_by_department(department: str, page: int = 0, size: int = 10) ->
                 title=row._mapping['title'],
                 url=row._mapping['url'],
                 date=date_str,
-                contentPreview=content_preview
+                contentPreview=content_preview,
+                latitude = None,
+                longitude = None
             )
             notices.append(notice)
 
@@ -242,7 +246,9 @@ def search(request: SearchRequest, page: int = 0, size: int = 10):
             "title": source.get('title', ''),
             "url": source.get('url', ''),
             "date": source.get('date', ''),
-            "contentPreview": source.get('content', '')
+            "contentPreview": source.get('content', ''),
+            "latitude": source.get('latitude', ''),
+            "longitude": source.get('longitude', ''),
         })
     
     return {
