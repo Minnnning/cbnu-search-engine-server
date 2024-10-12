@@ -1,3 +1,4 @@
+// SearchResultsView
 import SwiftUI
 import MapKit
 
@@ -46,7 +47,7 @@ struct SearchResultsView: View {
     @State private var hasMoreResults = true
     @State private var selectedLocation: (latitude: Double, longitude: Double)? = nil
     @State private var showFullMap = false
-
+    
     private let pageSize = 10
 
     private let inputDateFormatter: DateFormatter = {
@@ -97,7 +98,7 @@ struct SearchResultsView: View {
                                 Text(contentPreview)
                                     .font(.footnote)
                                     .foregroundColor(.gray)
-                                    .lineLimit(2) // Only show two lines of content
+                                    .lineLimit(2)
                             }
                             if let latitude = result.latitude, let longitude = result.longitude {
                                 let pin = MapPin(coordinate: CLLocationCoordinate2D(latitude: latitude + 0.0002, longitude: longitude))
@@ -114,9 +115,14 @@ struct SearchResultsView: View {
                                 }
                                 .frame(height: 200)
                                 .onTapGesture {
-                                    selectedLocation = (latitude: latitude, longitude: longitude)
-                                    showFullMap = true
+                                    if let latitude = result.latitude, let longitude = result.longitude {
+                                        selectedLocation = (latitude: latitude, longitude: longitude)
+                                        print("Selected location set to \(latitude), \(longitude)")
+                                        showFullMap = true
+                                    }
                                 }
+
+
                             }
                         }
                         .onAppear {
@@ -134,12 +140,20 @@ struct SearchResultsView: View {
             }
         }
         .onAppear(perform: fetchSearchResults)
-        .navigationTitle("검색 결과")
-        .sheet(isPresented: $showFullMap) {
+        .navigationTitle("\(searchQuery) 검색 결과")
+        .sheet(isPresented: Binding<Bool>(
+            get: { selectedLocation != nil },
+            set: { newValue in
+                if !newValue {
+                    selectedLocation = nil // 시트가 닫힐 때 selectedLocation을 nil로 설정
+                }
+            })
+        ) {
             if let location = selectedLocation {
                 FullMapView(latitude: location.latitude, longitude: location.longitude)
             }
         }
+
     }
 
     func fetchSearchResults() {

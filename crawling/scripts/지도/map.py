@@ -100,7 +100,7 @@ location = [
     {"title": "S17-1 양성재(지선관)", "latitude": 36.627947, "longitude": 127.452323, "site":"지도", "url":"https://maps.app.goo.gl/13zgCfSeRVYR6Ef18", "category":"정보", "date":"2024-10-07"},
     {"title": "S17-2 양성재(명덕관)", "latitude": 36.627299, "longitude": 127.452743, "site":"지도", "url":"https://maps.app.goo.gl/yCWVsUDZ4bnMxL577", "category":"정보", "date":"2024-10-07"},
     {"title": "S17-3 양성재(신민관)", "latitude": 36.627225, "longitude": 127.452186, "site":"지도", "url":"https://maps.app.goo.gl/FoMy5om5twcd6aEB6", "category":"정보", "date":"2024-10-07"},
-    {"title": "S17-4 v양현재(수위실)", "latitude": 36.627357, "longitude": 127.451269, "site":"지도", "url":"https://maps.app.goo.gl/uBr7PvgvVyS8GE1v7", "category":"정보", "date":"2024-10-07"},
+    {"title": "S17-4 양현재(수위실)", "latitude": 36.627357, "longitude": 127.451269, "site":"지도", "url":"https://maps.app.goo.gl/uBr7PvgvVyS8GE1v7", "category":"정보", "date":"2024-10-07"},
     {"title": "S17-5 양현재(청운관)", "latitude": 36.627328, "longitude": 127.450476, "site":"지도", "url":"https://maps.app.goo.gl/XFTuQrjcQ6qKj8Ep7", "category":"정보", "date":"2024-10-07"},
     {"title": "S17-6 양현재(등용관)", "latitude": 36.627057, "longitude": 127.450971, "site":"지도", "url":"https://maps.app.goo.gl/E7pTU2Exchxd7cop8", "category":"정보", "date":"2024-10-07"},
     {"title": "S17-7 양현재(관리동)", "latitude": 36.627062, "longitude": 127.450287, "site":"지도", "url":"https://maps.app.goo.gl/X1nZr5vSwZND4bsf8", "category":"정보", "date":"2024-10-07"},
