@@ -2,14 +2,19 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
-import time
-import json
+import time, datetime
 
-# Config 파일에서 드라이버 경로 읽기
-with open('../../config.json', 'r') as config_file:
-    config = json.load(config_file)
-    driver_path = config['driver_path']
+from dotenv import load_dotenv
+import os
+
+# .env 파일을 로드하여 환경 변수로 설정
+load_dotenv(dotenv_path='crawling/test.env')
+
+driver_path = os.getenv('DR_PATH')
 
 class NoticeScraper:
     def __init__(self, url, site, category, notice_list_selector, notice_contents_selector):
@@ -25,7 +30,9 @@ class NoticeScraper:
         firefox_options.add_argument("--headless")
         firefox_options.add_argument("--no-sandbox")
         firefox_options.add_argument("--disable-dev-shm-usage")
-        service = Service(executable_path=driver_path)  # geckodriver 경로 설정
+        # Geckodriver 서비스 설정
+        service = Service(executable_path=driver_path)
+        # Firefox 웹 드라이버 인스턴스 생성
         driver = webdriver.Firefox(service=service, options=firefox_options)
         return driver
 
@@ -40,22 +47,33 @@ class NoticeScraper:
             if not td or len(td) < 7:
                 continue
 
-            title_element = td[2].find_element(By.CSS_SELECTOR, "nobr > a")
+            try:
+                # 'a' 태그가 없는 경우 예외 처리
+                notice = {
+                    "site": self.site,
+                    "category": self.category,
+                    "title": td[2].text.strip(),
+                    "url": td[2].find_element(By.TAG_NAME, "a").get_attribute("href").strip(),
+                    "date": td[6].text.strip()
+                }
+                print(notice)
+                notices.append(notice)
+            except Exception as e:
+                continue
 
-            raw_date = td[6].text.strip()
-            # 날짜 형식 처리 (YYYY-MM-DD 형식으로 가정)
-            formatted_date = raw_date.replace('.', '-')
-
-            notice = {
-                "site": self.site,
-                "category": self.category,
-                "title": title_element.text.strip(),
-                "url": title_element.get_attribute("href").strip(),
-                "date": formatted_date
-            }
-            notices.append(notice)
-        
         return notices
-    
+
+    def get_contents_html(self, url):
+        self.driver.get(url)   
+        contents_element = self.driver.find_element(By.CSS_SELECTOR, self.notice_contents_selector)
+        return contents_element.get_attribute('outerHTML')
+
+
+
+    def get_contents_text(self, url):
+        html_content = self.get_contents_html(url)
+        soup = BeautifulSoup(html_content, 'html.parser')
+        return soup.get_text(separator="\n").strip()
+
     def close(self):
         self.driver.quit()
