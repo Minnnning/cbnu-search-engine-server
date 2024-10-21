@@ -1,6 +1,7 @@
 import pymysql
 from notice_scraper import NoticeScraper
 from 조형예술학과 import 조형예술학과
+from 디자인학과 import 디자인학과, DepartmentofDesignNoticeScraper
 
 from dotenv import load_dotenv
 import os
@@ -32,21 +33,33 @@ def is_duplicate(url):
     result = cursor.fetchone()
     return result[0] > 0
 
-if __name__ == "__main__":
-    # 각 학과 설정들을 리스트에 담습니다.
-    departments = [조형예술학과]
-
-    for department in departments:
-        print(f"스크래핑 시작: {department.site}")
-
-        # NoticeScraper 인스턴스를 생성합니다.
-        scraper = NoticeScraper(
+def get_scraper(department):
+    if department == 디자인학과:
+        return DepartmentofDesignNoticeScraper(
             department.url,
             department.site,
             department.category,
             department.notice_list_selector,
             department.notice_contents_selector
         )
+    else:
+        return NoticeScraper(
+            department.url,
+            department.site,
+            department.category,
+            department.notice_list_selector,
+            department.notice_contents_selector
+        )
+    
+if __name__ == "__main__":
+    # 각 학과 설정들을 리스트에 담습니다.
+    departments = [디자인학과, 조형예술학과]
+
+    for department in departments:
+        print(f"스크래핑 시작: {department.site}")
+
+        # 각 학과에 맞는 스크래퍼 인스턴스를 생성합니다.
+        scraper = get_scraper(department)
 
         # notice_list를 가져와서 출력합니다.
         notice_list = scraper.get_notice_list()
