@@ -34,10 +34,10 @@ def clean_text(text):
         return text.replace("\n", " ").replace("\r", " ").replace("'", "\\'")
     return text
 
-def is_duplicate(url):
-    """데이터베이스에 이미 존재하는 url인지 확인합니다."""
-    sql = f"SELECT COUNT(*) FROM {table_N} WHERE url = %s"
-    cursor.execute(sql, (url,))
+def is_duplicate(title):
+    """데이터베이스에 이미 존재하는 제목 인지 확인합니다."""
+    sql = f"SELECT COUNT(*) FROM {table_N} WHERE title = %s"
+    cursor.execute(sql, (title,))
     result = cursor.fetchone()
     return result[0] > 0
 
