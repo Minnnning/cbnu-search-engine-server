@@ -139,7 +139,7 @@ struct SearchResultsView: View {
                 .scrollContentBackground(.hidden)
             }
         }
-        .onAppear(perform: fetchSearchResults)
+        .onAppear(perform: fetchInitialSearchResults)
         .navigationTitle("\(searchQuery) 검색 결과")
         .sheet(isPresented: Binding<Bool>(
             get: { selectedLocation != nil },
@@ -156,14 +156,14 @@ struct SearchResultsView: View {
 
     }
 
-    func fetchSearchResults() {
+    func fetchSearchResults(retryCount: Int = 3) {
+        // 기존 fetchSearchResults() 함수 내용
         guard let urlString = Bundle.main.object(forInfoDictionaryKey: "API_SEARCH") as? String else {
             errorMessage = "Info.plist에서 유효하지 않은 URL"
             isLoading = false
             return
         }
 
-        // page와 size를 URL 파라미터로 추가
         let urlWithParams = "\(urlString)?page=\(currentPage)&size=\(pageSize)"
         
         guard let url = URL(string: urlWithParams) else {
@@ -186,8 +186,9 @@ struct SearchResultsView: View {
             DispatchQueue.main.async {
                 isLoading = false
                 
-                if let error = error {
-                    errorMessage = "Failed to load data: \(error.localizedDescription)"
+                if let error = error, retryCount > 0 {
+                    print("Retrying... Attempts left: \(retryCount - 1)")
+                    fetchSearchResults(retryCount: retryCount - 1)
                     return
                 }
                 
@@ -239,6 +240,11 @@ struct SearchResultsView: View {
             }
         }.resume()
     }
+    
+    func fetchInitialSearchResults() {
+        fetchSearchResults()
+    }
+
 
 
     func loadMoreResults() {
