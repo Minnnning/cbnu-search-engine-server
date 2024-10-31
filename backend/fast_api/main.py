@@ -158,6 +158,7 @@ def get_top_search_terms_from_db(limit: int = 5) -> List[str]:  # 기본값을 5
             FROM search_tokens 
             WHERE search_time >= :past_24_hours
             GROUP BY token 
+            HAVING COUNT(*) >= 7
             ORDER BY count DESC 
             LIMIT :limit
         """)
