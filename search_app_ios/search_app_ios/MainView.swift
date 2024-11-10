@@ -85,8 +85,6 @@ struct MainView: View {
 
                     Spacer()
                 }
-                .navigationTitle("") // 타이틀을 빈 문자열로 설정하여 상단에 타이틀이 보이지 않게 설정
-                .navigationBarTitleDisplayMode(.inline) // 네비게이션 바 타이틀을 인라인으로 설정
                 .onAppear(perform: fetchSearchTerms) // 뷰가 나타날 때 실시간 검색어 가져오기
                 .onReceive(timer) { _ in
                     fetchSearchTerms() // 타이머에 따라 일정 시간마다 API 호출

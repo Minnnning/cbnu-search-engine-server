@@ -20,6 +20,7 @@ struct FullMapView: View {
                         .font(.title)
                 }
             }
+            .edgesIgnoringSafeArea(.bottom)
             .navigationTitle("지도 보기")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -118,7 +118,6 @@ struct SearchResultsView: View {
                                     if let latitude = result.latitude, let longitude = result.longitude {
                                         selectedLocation = (latitude: latitude, longitude: longitude)
                                         print("Selected location set to \(latitude), \(longitude)")
-                                        showFullMap = true
                                     }
                                 }
 
