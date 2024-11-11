@@ -63,6 +63,7 @@ struct SearchResultsView: View {
     }()
 
     var body: some View {
+        
         ZStack {
             Color.appBackgroundColor
                 .ignoresSafeArea()
