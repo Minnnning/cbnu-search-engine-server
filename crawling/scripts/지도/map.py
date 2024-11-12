@@ -113,7 +113,18 @@ location = [
     {"title": "S21-10 온실", "latitude": 36.630432, "longitude": 127.451561, "site":"지도", "url":"https://maps.app.goo.gl/axAJa9XHxErcBG7c6", "category":"정보", "date":"2024-10-07"},
     {"title": "S21-20 온실관리동", "latitude": 36.630618, "longitude": 127.451704, "site":"지도", "url":"https://maps.app.goo.gl/cryjNqjoU9LXmtZu7", "category":"정보", "date":"2024-10-07"},
     {"title": "S21-23 농기계실습실", "latitude": 36.630707, "longitude": 127.452361, "site":"지도", "url":"https://maps.app.goo.gl/i1NEEyg3rMvYYDoW7", "category":"정보", "date":"2024-10-07"},
-    {"title": "S21-24 바이오시스템공학과", "latitude": 36.631040, "longitude": 127.451850, "site":"지도", "url":"https://maps.app.goo.gl/Ur8PnqVe8tm9qoew5", "category":"정보", "date":"2024-10-07"}
+    {"title": "S21-24 바이오시스템공학과", "latitude": 36.631040, "longitude": 127.451850, "site":"지도", "url":"https://maps.app.goo.gl/Ur8PnqVe8tm9qoew5", "category":"정보", "date":"2024-10-07"},
+
+    {"title": "충북대 후문", "latitude": 36.624877, "longitude": 127.462550, "site":"지도", "url":"https://maps.app.goo.gl/3Fwk526S4cjXmJa76", "category":"정보", "date":"2024-10-07"},
+    {"title": "충북대 정문", "latitude": 36.632298, "longitude": 127.452937, "site":"지도", "url":"https://maps.app.goo.gl/AUMwMZDHR1byjYnT9", "category":"정보", "date":"2024-10-07"},
+    {"title": "충북대 중문", "latitude": 36.631612, "longitude": 127.457066, "site":"지도", "url":"https://maps.app.goo.gl/ymtmtfAL2U6maviFA", "category":"정보", "date":"2024-10-07"},
+    {"title": "충북대 서문", "latitude": 36.626157, "longitude": 127.453885, "site":"지도", "url":"https://maps.app.goo.gl/EhnUb2jm17yhjbxN6", "category":"정보", "date":"2024-10-07"},
+    
+    {"title": "편의점 학연산 2층", "latitude": 36.625134, "longitude": 127.457179, "site":"지도", "url":"https://maps.app.goo.gl/Qz7DRs3qJBMuMSVy8", "category":"정보", "date":"2024-10-07"},
+    {"title": "편의점 양진재", "latitude": 36.624041, "longitude": 127.459510, "site":"지도", "url":"https://maps.app.goo.gl/3k6YWYALFFtfsQGa7", "category":"정보", "date":"2024-10-07"},
+    {"title": "편의점 양성재", "latitude": 36.627566, "longitude": 127.452817, "site":"지도", "url":"https://maps.app.goo.gl/Gvypc926u9jLobPw5", "category":"정보", "date":"2024-10-07"},
+    {"title": "편의점 학생회관", "latitude": 36.627629, "longitude": 127.458824, "site":"지도", "url":"https://maps.app.goo.gl/aFtkT8WgUJC8EKaU8", "category":"정보", "date":"2024-10-07"},
+    {"title": "편의점 인문사회관", "latitude": 36.630576, "longitude": 127.455937, "site":"지도", "url":"https://maps.app.goo.gl/Cm9JBR1Q2PkanWo39", "category":"정보", "date":"2024-10-07"}
 ]
 
 # MariaDB 연결
