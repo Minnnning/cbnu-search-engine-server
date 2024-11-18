@@ -1,167 +1,129 @@
 import SwiftUI
 
 struct MenusView: View {
-    @State private var menus: [Menu] = [] // 학식 메뉴 데이터를 저장하는 배열
-    @State private var isLoading: Bool = true // 데이터 로딩 상태를 나타내는 변수
-    @State private var errorMessage: String? = nil // 오류 메시지를 저장하는 변수
-    @State private var selectedRestaurant: String = "한빛식당" // 선택된 식당
-    @State private var dateRange: [Date] = [] // 월요일부터 금요일까지의 날짜 범위 저장
-    @State private var selectedDate: Date = Date() // 사용자가 선택한 날짜
+    @State private var menus: [Menu] = []
+    @State private var isLoading: Bool = true
+    @State private var errorMessage: String? = nil
+    @State private var selectedRestaurant: String = "한빛식당"
+    @State private var dateRange: [Date] = []
+    @State private var selectedDate: Date = Date()
 
-    let restaurants = ["한빛식당", "별빛식당", "은하수식당"] // 식당 이름 목록
+    let restaurants = ["한빛식당", "별빛식당", "은하수식당"]
 
     var body: some View {
         ZStack {
-            Color.appBackgroundColor
-                .ignoresSafeArea()
-
+            Color.appBackgroundColor.ignoresSafeArea()
             VStack {
                 if isLoading {
                     ProgressView("Loading...")
-                } else if let errorMessage = errorMessage {
+                } else if let errorMessage {
                     Text("Error: \(errorMessage)").foregroundColor(.red)
                 } else {
-                    VStack {
-                        // 식당 선택 Picker
-                        Picker("식당 선택", selection: $selectedRestaurant) {
-                            ForEach(restaurants, id: \.self) { restaurant in
-                                Text(restaurant).tag(restaurant)
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle()) // Segmented 스타일 적용
-                        .padding()
-
-                        // 선택한 날짜 및 요일 출력
-                        Text("\(formattedDate(selectedDate)) (\(formattedDayOfWeek(selectedDate)))")
-                            .font(.headline)
-                            .padding(.bottom, 20)
-
-                        // 날짜 선택 TabView
-                        if !dateRange.isEmpty {
-                            TabView(selection: $selectedDate) {
-                                ForEach(dateRange, id: \.self) { date in
-                                    MenuListView(menus: menusForRestaurantAndDate(restaurant: selectedRestaurant, date: date), date: date)
-                                        .tag(date) // TabView와 selectedDate를 동기화
-                                }
-                            }
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // 페이지 스타일의 탭뷰
-                        }
-                        
-                        Spacer() // Content Spacer to push the message to the bottom
-
-                                                // 좌우로 넘기세요 문구를 추가
-                                                Text("<<      좌우로 넘기세요      >>")
-                                                    .font(.footnote)
-                                                    .foregroundColor(.gray)
-                                                    .padding(.bottom, 20)
-                    }
+                    menuContent
                 }
             }
             .padding()
             .navigationTitle("학식 메뉴")
-            .onAppear(perform: fetchMenus) // 뷰가 나타날 때 API 호출
+            .onAppear(perform: fetchMenus)
         }
     }
 
-    // 날짜와 식당에 맞는 메뉴 필터링 함수
+    private var menuContent: some View {
+        VStack {
+            Picker("식당 선택", selection: $selectedRestaurant) {
+                ForEach(restaurants, id: \.self) { Text($0).tag($0) }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
+
+            Text("\(formattedDate(selectedDate)) (\(formattedDayOfWeek(selectedDate)))")
+                .font(.headline)
+                .padding(.bottom, 20)
+
+            if !dateRange.isEmpty {
+                TabView(selection: $selectedDate) {
+                    ForEach(dateRange, id: \.self) { date in
+                        MenuListView(
+                            menus: menusForRestaurantAndDate(restaurant: selectedRestaurant, date: date),
+                            date: date
+                        )
+                        .tag(date)
+                    }
+                }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            }
+
+            Spacer()
+            Text("<<      좌우로 넘기세요      >>")
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .padding(.bottom, 20)
+        }
+    }
+
     func menusForRestaurantAndDate(restaurant: String, date: Date) -> [Menu] {
-        let dateString = formattedDate(date) // 선택한 날짜를 문자열로 변환
+        let dateString = formattedDate(date)
         return menus.filter { $0.restaurant_name == restaurant && $0.date == dateString }
     }
 
-    // 날짜 포맷 함수 (yyyy-MM-dd 형태로 출력)
     func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        DateFormatter.shared.string(from: date, format: "yyyy-MM-dd")
     }
 
-    // 요일을 포맷하는 함수 (월, 화 등으로 출력)
     func formattedDayOfWeek(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR") // 한국어로 요일 표시
-        formatter.dateFormat = "EEEE" // 요일을 출력하는 포맷
-        return formatter.string(from: date)
+        DateFormatter.shared.string(from: date, format: "EEEE", locale: Locale(identifier: "ko_KR"))
     }
 
-    // API 호출 함수
     func fetchMenus() {
         guard let urlString = Bundle.main.object(forInfoDictionaryKey: "API_MENU") as? String,
               let url = URL(string: urlString) else {
-            errorMessage = "Info.plist에서 유효하지 않은 URL"
-            isLoading = false
+            updateErrorMessage("Info.plist에서 유효하지 않은 URL")
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             DispatchQueue.main.async {
                 isLoading = false
-
-                if let error = error {
-                    errorMessage = "데이터 로드 실패: \(error.localizedDescription)"
-                    return
-                }
-
-                guard let data = data else {
-                    errorMessage = "데이터를 받지 못했습니다"
-                    return
-                }
-
-                do {
-                    let decodedResponse = try JSONDecoder().decode([Menu].self, from: data)
-                    self.menus = decodedResponse
-
-                    // 받아온 메뉴 중 첫 번째 날짜를 기준으로 5일의 날짜 범위 설정
-                    if let firstMenu = decodedResponse.first {
-                        let startDate = stringToDate(firstMenu.date)
-                        self.dateRange = generateDateRange(from: startDate, days: 5)
-
-                        // 현재 날짜가 범위 내에 있으면 현재 날짜를 선택, 아니면 마지막 날짜 선택
-                        if let validDate = validSelectedDate(from: self.dateRange) {
-                            self.selectedDate = validDate
-                        }
-                    }
-
-                } catch {
-                    errorMessage = "데이터 파싱 실패: \(error.localizedDescription)"
+                if let error {
+                    updateErrorMessage("데이터 로드 실패: \(error.localizedDescription)")
+                } else if let data, let decodedMenus = try? JSONDecoder().decode([Menu].self, from: data) {
+                    processFetchedMenus(decodedMenus)
+                } else {
+                    updateErrorMessage("데이터를 받지 못했습니다")
                 }
             }
         }.resume()
     }
 
-    // 문자열을 Date로 변환하는 함수
+    func processFetchedMenus(_ fetchedMenus: [Menu]) {
+        menus = fetchedMenus
+        if let firstDate = fetchedMenus.first.flatMap({ stringToDate($0.date) }) {
+            dateRange = generateDateRange(from: firstDate, days: 5)
+            
+            // 현재 날짜가 범위 내에 있으면 선택, 아니면 첫 번째 날짜를 선택
+            selectedDate = validSelectedDate(from: dateRange) ?? dateRange.first ?? Date()
+        }
+    }
+
+    func updateErrorMessage(_ message: String) {
+        errorMessage = message
+        isLoading = false
+    }
+
     func stringToDate(_ dateString: String) -> Date {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.date(from: dateString) ?? Date() // 변환 실패 시 현재 날짜 반환
+        DateFormatter.shared.date(from: dateString, format: "yyyy-MM-dd") ?? Date()
     }
 
-    // 시작 날짜로부터 days만큼의 날짜 배열 생성 함수
     func generateDateRange(from startDate: Date, days: Int) -> [Date] {
-        var dateRange: [Date] = []
-        for i in 0..<days {
-            if let date = Calendar.current.date(byAdding: .day, value: i, to: startDate) {
-                dateRange.append(date)
-            }
-        }
-        return dateRange
+        (0..<days).compactMap { Calendar.current.date(byAdding: .day, value: $0, to: startDate) }
     }
 
-    // 현재 날짜가 범위 내에 있으면 현재 날짜를 반환, 아니면 마지막 날짜 반환
     func validSelectedDate(from dateRange: [Date]) -> Date? {
-        let today = Date()
-        if let firstDate = dateRange.first, let lastDate = dateRange.last {
-            if today >= firstDate && today <= lastDate {
-                return today
-            } else {
-                return lastDate
-            }
-        }
-        return nil
+        let today = Calendar.current.startOfDay(for: Date())
+        return dateRange.first { Calendar.current.isDate($0, inSameDayAs: today) }
     }
 }
 
-// 각 날짜와 해당 식당의 메뉴 리스트를 표시하는 뷰
 struct MenuListView: View {
     let menus: [Menu]
     let date: Date
@@ -175,48 +137,40 @@ struct MenuListView: View {
                         .font(.body)
                 } else {
                     ForEach(menus) { menu in
-                            VStack(alignment: .leading) {
-                                Text("\(menuTime(menu.time))")
-                                    .font(.headline)
-                                    .padding(.bottom, 2)
-                                    .frame(width: 300, alignment: .leading)
-                                
-                                Text(menu.menu)
-                                    .font(.body)
-                                    .padding(.top, 2)
-                                Spacer()
-                            }
-                            .frame(width: 300) // 고정된 너비 설정
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .shadow(radius: 2)
+                        MenuItemView(menu: menu)
                     }
                 }
             }
             .padding()
         }
     }
+}
 
-    // 시간 표시를 변환하는 함수
-    func menuTime(_ time: Int) -> String {
-        switch time {
-        case 1: return "아침"
-        case 2: return "점심"
-        case 3: return "저녁"
-        default: return "알 수 없음"
+struct MenuItemView: View {
+    let menu: Menu
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(menuTime(menu.time))
+                .font(.headline)
+                .padding(.bottom, 2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(menu.menu)
+                .font(.body)
+                .padding(.top, 2)
         }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 2)
     }
 
-    // 날짜 포맷 함수
-    func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+    func menuTime(_ time: Int) -> String {
+        ["알 수 없음", "아침", "점심", "저녁"][min(max(time, 0), 3)]
     }
 }
 
-// API 응답 구조에 맞춘 데이터 모델
 struct Menu: Identifiable, Decodable {
     let id: Int
     let restaurantId: Int
@@ -224,6 +178,21 @@ struct Menu: Identifiable, Decodable {
     let menu: String
     let time: Int
     let date: String
+}
+
+extension DateFormatter {
+    static let shared = DateFormatter()
+
+    func string(from date: Date, format: String, locale: Locale = .current) -> String {
+        self.dateFormat = format
+        self.locale = locale
+        return self.string(from: date)
+    }
+
+    func date(from string: String, format: String) -> Date? {
+        self.dateFormat = format
+        return self.date(from: string)
+    }
 }
 
 #Preview {
