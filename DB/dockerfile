@@ -1,0 +1,8 @@
+# MariaDB 이미지를 기반으로 시작
+FROM mariadb:10.5
+
+# MariaDB 클라이언트를 설치
+RUN apt-get update && apt-get install -y mariadb-client
+
+# 데이터베이스가 실행되면, 기본적으로 MariaDB 서버가 시작됩니다.
+CMD ["mysqld"]
