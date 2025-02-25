@@ -1,18 +1,83 @@
 version: '3.8'
 services:
+  selenium:
+    image: selenium/standalone-firefox:latest  # Firefox + Selenium 서버 실행
+    container_name: selenium_container
+    shm_size: 2g  # 공유 메모리 설정 (브라우저 충돌 방지)
+    ports:
+      - "4444:4444"  # Selenium WebDriver 포트    
+    networks:
+      - my_network
+    environment:
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+
   mariadb:
     build: ./DB
-    container_name: mariadb_container  # 컨테이너 이름 설정
+    container_name: mariadb_container
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root_password  # 루트 계정 비밀번호
-      MYSQL_DATABASE: my_database  # 생성할 기본 데이터베이스
-      MYSQL_USER: my_user  # 사용자 계정
-      MYSQL_PASSWORD: my_password  # 사용자 계정 비밀번호
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
     ports:
-      - "3306:3306"  # 로컬 호스트의 3306 포트와 컨테이너의 3306 포트 연결
+      - "3306:3306"
     volumes:
-      - mariadb_data:/var/lib/mysql  # MariaDB 데이터 영구 저장
+      - mariadb_data:/var/lib/mysql
+      - ./DB:/docker-entrypoint-initdb.d  # 초기화 스크립트 마운트
+    networks:
+      - my_network
+
+  crawler:
+    build: ./Crawler  # 크롤링 코드가 있는 폴더
+    container_name: crawler_container
+    depends_on:
+      - selenium  # Selenium 컨테이너가 먼저 실행된 후 크롤러 실행
+      - mariadb   # DB 컨테이너가 실행된 후 크롤러 실행
+    environment:
+      - SELENIUM_URL=http://selenium:4444/wd/hub  # Selenium 서버 주소
+      - DB_HOST=mariadb
+      - DB_USER=my_user
+      - DB_PASS=my_password
+      - DB_NAME=my_database
+    volumes:
+      - ./crawler:/app  # 크롤링 코드와 컨테이너 간 동기화
+    networks:
+      - my_network
+
+  fastapi:
+    build: ./FastAPI
+    container_name: fastapi_container
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+      - elasticsearch  # FastAPI 실행 전에 Elasticsearch 실행
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "mysql://my_user:my_password@mariadb:3306/my_database"
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"  # Elasticsearch 연결
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
+    container_name: elasticsearch_container
+    environment:
+      - discovery.type=single-node  # 단일 노드 모드로 실행
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"  # 메모리 제한 설정
+      - xpack.security.enabled=false  # 기본 인증 비활성화
+    ports:
+      - "9200:9200"  # REST API 포트
+      - "9300:9300"  # 클러스터 통신 포트
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
 
 volumes:
-  mariadb_data:  # 데이터 저장을 위한 볼륨
+  mariadb_data:
+    name: mariadb_data  # Docker가 mariadb_data 볼륨을 생성
+  es_data:
+    name: es_data  # 이름 직접 지정
+
+networks:
+  my_network:
+    driver: bridge

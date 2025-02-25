@@ -1,0 +1,22 @@
+# Python 환경 설정
+FROM python:3.10
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 필요한 파일 복사
+COPY requirements.txt .
+
+# 패키지 설치
+RUN pip install --no-cache-dir -r requirements.txt
+
+# wait-for-it 스크립트 다운로드
+RUN apt-get update && apt-get install -y curl && \
+    curl -o /wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
+    chmod +x /wait-for-it.sh
+
+# 크롤링 코드 복사
+COPY . .
+
+# MariaDB가 준비될 때까지 기다리기
+CMD /wait-for-it.sh mariadb:3306 -- python crawler.py
