@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/react
 # Edit at https://www.toptal.com/developers/gitignore?templates=react
 
+# Ignore Python cache files
+**/__pycache__/
+*.pyc
+*.pyo
+
 ### react ###
 .DS_*
 *.log
