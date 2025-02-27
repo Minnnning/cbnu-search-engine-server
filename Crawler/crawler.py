@@ -1,74 +1,73 @@
-import pymysql
-from notice_scraper import NoticeScraper
-from 경영정보학과 import 경영정보학과
-from 경영학부 import 경영학부
-from 국제경영학과 import 국제경영학과
-
-from dotenv import load_dotenv
+import subprocess
 import os
+import logging
 
-# .env 파일 로드
-load_dotenv(dotenv_path='.env')
+# 로그 설정
+logging.basicConfig(
+    level=logging.DEBUG,  # 로그 레벨 설정 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(levelname)s - %(message)s',  # 로그 메시지 형식
+    handlers=[
+        logging.StreamHandler()  # 콘솔에 로그 출력
+        # logging.FileHandler('app.log')  # 파일에 로그 출력
+    ]
+)
 
-# 환경 변수 설정
-hosturl = os.getenv('DB_HOST')
-username = os.getenv('DB_USER')
-userpassword = os.getenv('DB_PASS')
-dbname = os.getenv('DB_NAME')
+# 경영대학 main.py 실행
+def run_business_school():
+    business_school_path = os.path.join(os.getcwd(), '경영대학', 'main.py')
+    logging.info(f"경영대학 main.py 실행 시작: {business_school_path}")
+    try:
+        subprocess.run(['python', business_school_path], check=True)
+        logging.info("경영대학 main.py 실행 완료")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"경영대학 main.py 실행 중 오류 발생: {e}")
 
-table_N = 'notice_board'
+# 공학대학 main.py 실행
+def run_engineering_school():
+    engineering_school_path = os.path.join(os.getcwd(), '공과대학', 'main.py')
+    logging.info(f"공과대학 main.py 실행 시작: {engineering_school_path}")
+    try:
+        subprocess.run(['python', engineering_school_path], check=True)
+        logging.info("공과대학 main.py 실행 완료")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"공과대학 main.py 실행 중 오류 발생: {e}")
 
-# MariaDB 연결
-db_connection = pymysql.connect(host=hosturl, user=username, password=userpassword, db=dbname, charset='utf8')
-cursor = db_connection.cursor()
+# 공통 main.py 실행
+def run_public():
+    public_path = os.path.join(os.getcwd(), '공통', 'main.py')
+    logging.info(f"공통 main.py 실행 시작: {public_path}")
+    try:
+        subprocess.run(['python', public_path], check=True)
+        logging.info("공통 main.py 실행 완료")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"공통 main.py 실행 중 오류 발생: {e}")
 
-def clean_text(text):
-    """텍스트에서 특수 문자 및 불필요한 공백을 제거"""
-    if text:
-        return text.replace("\n", " ").replace("\r", " ").replace("'", "\\'")
-    return text
+# 농업생명환경대학 main.py 실행
+def run_agriculture_school():
+    agriculture_school_path = os.path.join(os.getcwd(), '농업생명환경대학', 'main.py')
+    logging.info(f"농업생명환경대학 main.py 실행 시작: {agriculture_school_path}")
+    try:
+        subprocess.run(['python', agriculture_school_path], check=True)
+        logging.info("농업생명환경대학 main.py 실행 완료")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"농업생명환경대학 main.py 실행 중 오류 발생: {e}")
 
-def is_duplicate(url):
-    """데이터베이스에 이미 존재하는 url인지 확인"""
-    sql = f"SELECT COUNT(*) FROM {table_N} WHERE url = %s"
-    cursor.execute(sql, (url,))
-    result = cursor.fetchone()
-    return result[0] > 0
+# 사범대학 main.py 실행
+def run_education_school():
+    education_school_path = os.path.join(os.getcwd(), '사범대학', 'main.py')
+    logging.info(f"사범대학 main.py 실행 시작: {education_school_path}")
+    try:
+        subprocess.run(['python', education_school_path], check=True)
+        logging.info("사범대학 main.py 실행 완료")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"사범대학 main.py 실행 중 오류 발생: {e}")       
 
 if __name__ == "__main__":
-    departments = [경영정보학과, 경영학부, 국제경영학과]
+    logging.info("프로그램 실행 시작")
+    #run_business_school()
+    #run_engineering_school()
+    #run_public()
+    #run_agriculture_school()
+    run_education_school()
 
-    for department in departments:
-        print(f"스크래핑 시작: {department.site}")
-
-        scraper = NoticeScraper(
-            department.url,
-            department.site,
-            department.category,
-            department.notice_list_selector,
-            department.notice_contents_selector
-        )
-
-        notice_list = scraper.get_notice_list()
-        for notice in notice_list:
-            if is_duplicate(notice['url']):
-                print(f"중복된 데이터, 건너뜀: {notice['url']}")
-                continue
-
-            contents_text = clean_text(scraper.get_contents_text(notice['url']))
-            try:
-                sql = f"INSERT INTO {table_N} (title, content ,date, url, site, category) VALUES (%s, %s, %s, %s, %s, %s)"
-                values = (notice['title'], contents_text, notice['date'], notice['url'], notice['site'], department.category)
-                cursor.execute(sql, values)
-                db_connection.commit()
-                print(f"Data inserted: title={notice['title']}, site={notice['site']}")
-
-            except pymysql.Error as e:
-                print(f"Error {e.args[0]}, {e.args[1]}")
-                db_connection.rollback()
-
-        scraper.close()
-        print(f"스크래핑 완료: {department.site}\n")
-
-    db_connection.close()
-    print("경영대학 작업 완료.")
+    logging.info("프로그램 실행 완료")

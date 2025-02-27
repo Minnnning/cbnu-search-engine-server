@@ -18,5 +18,5 @@ RUN apt-get update && apt-get install -y curl && \
 # 크롤링 코드 복사
 COPY . .
 
-# MariaDB가 준비될 때까지 기다리기
-CMD /wait-for-it.sh mariadb:3306 -- python crawler.py
+# MariaDB와 Selenium이 준비될 때까지 기다리기
+CMD /wait-for-it.sh mariadb:3306 -- /wait-for-it.sh selenium:4444 -- python crawler.py

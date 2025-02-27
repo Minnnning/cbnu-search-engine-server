@@ -2,3 +2,4 @@ selenium
 pymysql
 beautifulsoup4
 python-dotenv
+requests
