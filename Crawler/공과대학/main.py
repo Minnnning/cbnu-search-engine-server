@@ -9,7 +9,7 @@ from 도시공학과 import 도시공학과
 from 신소재공학과 import 신소재공학과
 from 안전공학과 import 안전공학과
 from 토목공학부 import 토목공학부, CivilEngineeringNoticeScraper
-from 화학공학과 import 화학공학과, ChemicalEngineeringNoticeScraper
+from 화학공학과 import 화학공학과
 from 환경공학과 import 환경공학과
 
 from dotenv import load_dotenv
@@ -63,15 +63,6 @@ def get_scraper(department):
     
     elif department == 토목공학부:
         return CivilEngineeringNoticeScraper(
-            department.url,
-            department.site,
-            department.category,
-            department.notice_list_selector,
-            department.notice_contents_selector
-        )
-    
-    elif department == 화학공학과:
-        return ChemicalEngineeringNoticeScraper(
             department.url,
             department.site,
             department.category,

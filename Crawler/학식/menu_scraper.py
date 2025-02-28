@@ -17,7 +17,7 @@ class MenuScraper:
         self.tab = tab
         self.restaurant_id = restaurant_id
         self.restaurant_name = restaurant_name
-        self.driver = None
+        self.driver = self._init_driver()
 
     def _init_driver(self):
         firefox_options = Options()
@@ -82,7 +82,6 @@ class MenuScraper:
             self.driver.quit()
 
     def run(self):
-        self.setup_driver()
         self.fetch_page()
         menus = self.get_menus()
         self.close_driver()
