@@ -64,12 +64,14 @@ services:
     environment:
       - discovery.type=single-node  # 단일 노드 모드로 실행
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"  # 메모리 제한 설정
-      - xpack.security.enabled=true  # 기본 인증 비활성화
+      - xpack.security.enabled=false  # 기본 인증 비활성화
     ports:
       - "9200:9200"  # REST API 포트
       - "9300:9300"  # 클러스터 통신 포트
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    networks:
+      - my_network
 
 volumes:
   mariadb_data:

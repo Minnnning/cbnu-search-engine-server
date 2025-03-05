@@ -1,16 +1,16 @@
-curl -X GET "localhost:9200/_cat/indices?v" -u elastic:<pw>   모든 인덱스 출력
+curl -X GET "localhost:9200/_cat/indices?v"   모든 인덱스 출력
 
-curl -X DELETE "localhost:9200/*" -u elastic:<password>
+curl -X DELETE "localhost:9200/*"
 
-curl -X PUT "localhost:9200/notice_index" -H 'Content-Type: application/json' -u elastic:Pw -d'
+curl -X PUT "localhost:9200/notice_index" -H 'Content-Type: application/json' -d'
 {
   "settings": {
     "analysis": {
       "tokenizer": {
         "nori_tokenizer_custom": {
           "type": "nori_tokenizer",
-          "decompound_mode": "mixed",  // 복합어 처리 활성화
-          "discard_punctuation": "true"  // 문장 부호 무시
+          "decompound_mode": "mixed",
+          "discard_punctuation": "true"
         },
         "ngram_tokenizer": {
           "type": "ngram",
@@ -21,7 +21,7 @@ curl -X PUT "localhost:9200/notice_index" -H 'Content-Type: application/json' -u
       "filter": {
         "stopwords_filter": {
           "type": "stop",
-          "stopwords": ["을", "를", "이", "가"]  // 불용어 처리: 주로 한국어 조사
+          "stopwords": ["을", "를", "이", "가"]
         }
       },
       "analyzer": {

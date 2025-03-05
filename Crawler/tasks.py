@@ -148,8 +148,6 @@ def run_menu():
         logging.error(f"학식 main.py 실행 중 오류 발생: {e}")
 
 # ---------- DB -> ES 동기화 함수 ----------
-
-# .env 파일을 로드하여 환경변수 설정 (예: backend/test.env)
 from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 
@@ -158,22 +156,11 @@ hosturl = os.getenv('DB_HOST')
 username = os.getenv('DB_USER')
 userpassword = os.getenv('DB_PASS')
 dbname = os.getenv('DB_NAME')
-es_pw = os.getenv('ES_PASS')
 es_host = os.getenv('ES_HOST')
 es_port = os.getenv('ES_PORT')
 
-# Elasticsearch 설정
-es_config = {
-    'hosts': [es_host],
-    'http_auth': ('elastic', es_pw),
-    'scheme': 'http',
-    'port': es_port
-}
-# Elasticsearch 클라이언트 생성
-es = Elasticsearch(
-    es_config['hosts'],
-    http_auth=es_config['http_auth']
-)
+# Elasticsearch 클라이언트 생성 (비밀번호 없이)
+es = Elasticsearch([es_host])
 
 def get_last_indexed_id():
     query = {
@@ -228,8 +215,8 @@ def sync_db_to_es():
     이미 색인된 문서와 동일한 id가 있을 경우 덮어씁니다.
     """
     try:
-        last_id = get_last_indexed_id()
-        data = fetch_data_from_db(last_id)
+        last_id = get_last_indexed_id() # 마지막id
+        data = fetch_data_from_db(last_id) #마지막 id 이후
         if data:
             success, _ = bulk(es, generate_docs(data))
             logging.info(f"Successfully indexed {success} documents.")
