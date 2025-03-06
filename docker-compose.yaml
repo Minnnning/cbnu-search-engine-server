@@ -10,6 +10,7 @@ services:
     environment:
       - SE_NODE_MAX_SESSIONS=5
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_SESSION_TIMEOUT=60
 
   mariadb:
     build: ./DB
@@ -27,13 +28,20 @@ services:
       - ./DB:/docker-entrypoint-initdb.d  # 초기화 스크립트 마운트
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   crawler:
     build: ./Crawler  # 크롤링 코드가 있는 폴더
     container_name: crawler_container
     depends_on:
-      - selenium  # Selenium 컨테이너가 먼저 실행된 후 크롤러 실행
-      - mariadb   # DB 컨테이너가 실행된 후 크롤러 실행
+      mariadb:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     environment:
       - SELENIUM_URL=http://selenium:4444/wd/hub  # Selenium 서버 주소
       - DB_HOST=mariadb
@@ -50,8 +58,10 @@ services:
     container_name: fastapi_container
     restart: unless-stopped
     depends_on:
-      - mariadb
-      - elasticsearch  # FastAPI 실행 전에 Elasticsearch 실행
+      mariadb:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     ports:
       - "8000:8000"
     environment:
@@ -72,6 +82,11 @@ services:
       - es_data:/usr/share/elasticsearch/data
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://elasticsearch:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mariadb_data:
