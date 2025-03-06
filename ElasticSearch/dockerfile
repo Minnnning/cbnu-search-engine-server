@@ -1,3 +1,10 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch:8.17.2
 
+# Nori 분석기 플러그인 설치
 RUN elasticsearch-plugin install --batch analysis-nori
+
+# 초기화 스크립트 복사
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# 사용자 정의 엔트리포인트로 변경
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

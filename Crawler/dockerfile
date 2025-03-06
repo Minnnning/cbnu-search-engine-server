@@ -19,5 +19,4 @@ RUN apt-get update && apt-get install -y curl && apt-get install -y tzdata && \
 COPY . .
 
 # MariaDB와 Selenium이 준비될 때까지 기다리기
-CMD ["python","crawler.py"]
-# /wait-for-it.sh mariadb:3306 -- /wait-for-it.sh selenium:4444 -- python crawler.py
+CMD /wait-for-it.sh mariadb:3306 -- /wait-for-it.sh selenium:4444 -- python crawler.py
