@@ -1,5 +1,13 @@
-# main.py
+import sys
+import os
 import pymysql
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
+
+sys.path.append(os.path.join(BASE_DIR, '공통'))
+
 from notice_scraper import NoticeScraper
 from 국제교류본부 import 국제교류본부, InternationalExchangeCenterNoticeScraper
 from linc사업단 import linc사업단
@@ -11,11 +19,8 @@ from 학생생활관 import 학생생활관, DormitoryNoticeScraper
 from 스포츠센터 import 스포츠센터, SportCenterNoticeScraper
 from 충북대취업지원본부 import 취업지원본부, EmploymentSupportCenterNoticeScraper
 
-from dotenv import load_dotenv
-import os
-
 # .env 파일 로드
-load_dotenv(dotenv_path='.env')
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 hosturl =  os.getenv('DB_HOST')
 username = os.getenv('DB_USER')

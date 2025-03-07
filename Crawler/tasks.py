@@ -11,7 +11,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# ---------- 기존 크롤링 함수들 ----------
 def run_business_school():
     path = os.path.join(os.getcwd(), '경영대학', 'main.py')
     logging.info(f"경영대학 main.py 실행 시작: {path}")

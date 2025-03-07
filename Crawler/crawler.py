@@ -43,10 +43,10 @@ if __name__ == '__main__':
     scheduler.add_job(run_medicine_school, 'cron', hour=3, minute=20, id='medicine_school')
     scheduler.add_job(run_humanities_school, 'cron', hour=3, minute=40, id='humanities_school')
     scheduler.add_job(run_natural_sciences_school, 'cron', hour=4, minute=0, id='natural_sciences_school')
-    scheduler.add_job(run_electronics_information_school, 'cron', hour=4, minute=20, id='electronics_information_school')
+    scheduler.add_job(run_electronics_information_school, 'cron', hour=18, minute=5, id='electronics_information_school')
 
     # DB -> ES 동기화 작업
-    scheduler.add_job(sync_db_to_es, 'cron', hour=4, minute=40, id='sync_db_to_es')
+    scheduler.add_job(sync_db_to_es, 'cron', hour=17, minute=45, id='sync_db_to_es')
 
     # 메뉴 크롤링은 매주 토요일에만 실행
     scheduler.add_job(run_menu, 'cron', day_of_week='sat', hour=12, minute=0, id='menu')

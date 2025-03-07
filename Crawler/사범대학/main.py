@@ -1,4 +1,13 @@
-# main.py
+import sys
+import os
+import pymysql
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
+
+sys.path.append(os.path.join(BASE_DIR, '사범대학'))
+
 import pymysql
 from notice_scraper import NoticeScraper
 from 교육학과 import 교육학과
@@ -10,11 +19,8 @@ from 지구과학교육과 import 지구과학교육과
 from 체육교육과 import 체육교육과
 from 화학교육과 import 화학교육과
 
-from dotenv import load_dotenv
-import os
-
 # .env 파일 로드
-load_dotenv(dotenv_path='.env')
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 # 환경 변수 설정
 hosturl = os.getenv('DB_HOST')

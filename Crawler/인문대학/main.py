@@ -1,6 +1,15 @@
 # main.py
+import sys
+import os, time
+import pymysql
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
+
+sys.path.append(os.path.join(BASE_DIR, '인문대학'))
+
 from notice_scraper import NoticeScraper
-import time
 from 국어국문학과 import 국어국문학과
 from 고고미술사학과 import 고고미술사학과, ArchaeologyAndArtHistoryNoticescraper
 from 독일언어문화학과 import 독일언어문화학과
@@ -11,12 +20,8 @@ from 철학과 import 철학과
 from 프랑스언어문화학과 import 프랑스언어문화학과
 from 러시아언어문화학과 import 러시아언어문화학과, RussianLanguageAndCultureNoticeScraper
 
-import pymysql
-from dotenv import load_dotenv
-import os
-
 # .env 파일 로드
-load_dotenv(dotenv_path='.env')
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 # 환경 변수 설정
 hosturl = os.getenv('DB_HOST')

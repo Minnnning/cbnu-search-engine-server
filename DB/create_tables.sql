@@ -18,3 +18,9 @@ CREATE TABLE IF NOT EXISTS menus (
     time INT NOT NULL,                        
     date DATE NOT NULL                        
 );
+
+CREATE TABLE IF NOT EXISTS searchterm (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    search_time DATETIME NOT NULL
+);
