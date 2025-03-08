@@ -55,8 +55,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "mysql://my_user:my_password@mariadb:3306/my_database"
-      ELASTICSEARCH_URL: "http://elasticsearch:9200"  # Elasticsearch 연결
+      DATABASE_URL: "mysql+pymysql://my_user:my_password@mariadb:3306/my_database"
+      ELASTICSEARCH_URL: "http://elasticsearch:9200/notice_index"  # Elasticsearch 연결
+    networks:
+      - my_network
 
   elasticsearch:
     build: ./ElasticSearch

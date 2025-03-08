@@ -12,20 +12,11 @@ import os
 # .env 파일 로드
 load_dotenv(dotenv_path='.env')
 
-# MariaDB 설정
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASS')
-
-DB_NAME_NOTICE = os.getenv('DB_NAME')
-
-# Elasticsearch 설정
-ES_HOST = os.getenv('ES_HOST')
-ES_INDEX = os.getenv('ES_INDEX')
+DATABASE_URL = os.getenv('DATABASE_URL')
+ES_HOST = os.getenv('ELASTICSEARCH_URL')
 
 # SQLAlchemy 엔진 생성 및 세션 설정
-engine_notice = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_NOTICE}")
+engine_notice = create_engine(DATABASE_URL)
 SessionLocalNotice = sessionmaker(autocommit=False, autoflush=False, bind=engine_notice)
 
 app = FastAPI()
@@ -66,7 +57,7 @@ def tokenize_query_with_nori(query: str) -> List[str]:
         "text": query
     }
     response = requests.post(
-        f"{ES_HOST}/{ES_INDEX}/_analyze",
+        f"{ES_HOST}/_analyze",
         json=analyze_request_body
     )
     if response.status_code == 200:
@@ -95,7 +86,7 @@ def search_elasticsearch(query_string, page: int = 0, size: int = 10):
         "size": size
     }
     response = requests.get(
-        f"{ES_HOST}/{ES_INDEX}/_search",
+        f"{ES_HOST}/_analyze",
         json=es_query
     )
     if response.status_code == 200:
@@ -230,3 +221,22 @@ def get_menus():
     store_search_terms_in_db("학식")
     menus = get_menus_from_db()
     return menus
+
+@app.get("/healthcheck")
+def healthcheck():
+    # DB 연결 점검: 간단한 쿼리 실행
+    try:
+        with engine_notice.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except Exception as db_error:
+        raise HTTPException(status_code=500, detail=f"Database connection failed: {db_error}")
+
+    # Elasticsearch 연결 점검: 기본 엔드포인트에 요청
+    try:
+        es_response = requests.get(f"{ES_HOST}")
+        if es_response.status_code != 200:
+            raise Exception(f"Elasticsearch returned status code {es_response.status_code}")
+    except Exception as es_error:
+        raise HTTPException(status_code=500, detail=f"Elasticsearch connection failed: {es_error}")
+
+    return {"status": "ok"}
